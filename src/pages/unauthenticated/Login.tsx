@@ -41,7 +41,7 @@ export default function Login() {
     password: { required: "Password is required" },
   };
 
-  const onSubmit: SubmitHandler<LoginForm> = async (data) => {
+  const onSubmit: SubmitHandler<LoginForm> = async (form): Promise<void> => {
     try {
       setServerErrorMsg("");
       setLoading(true);
@@ -49,7 +49,7 @@ export default function Login() {
       const {
         data: { user, session },
         error,
-      } = await login(data?.email, data?.password);
+      } = await login(form?.email, form?.password);
 
       if (error) {
         setServerErrorMsg(error.message);
@@ -58,6 +58,7 @@ export default function Login() {
           description: "Please try again",
           variant: "destructive",
         });
+        return;
       }
 
       if (user && session) navigate("/");
@@ -65,10 +66,7 @@ export default function Login() {
       const error = err as Error;
 
       setServerErrorMsg("Email or Password is incorrect");
-      toast({
-        title: error.message,
-        variant: "destructive",
-      });
+      toast({ title: error.message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
