@@ -16,7 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import BgImage from "@/assets/svg/startingScreenBg.svg";
-import AppIcon from "@/assets/images/logo/appIcon.png";
+import AppLogo from "@/components/common/AppLogo";
 
 type LoginForm = {
   email: string;
@@ -73,18 +73,12 @@ export default function Login() {
   };
 
   return (
-    <div className="md:container md:ps-20 h-[100dvh] dark:bg-gray-900">
-      <header className="absolute items-center hidden h-20 md:top-12 md:flex gap-x-2">
-        <img src={AppIcon} alt="app logo" className="size-10" />
-        <span
-          aria-label="app title"
-          className="hidden text-2xl font-medium md:inline"
-        >
-          <span className="text-primary-500">This</span>Task
-        </span>
-      </header>
+    <div className="md:container md:ps-20 flex items-center h-[100dvh] dark:bg-gray-900">
+      <div className="space-y-12">
+        <header className="hidden md:block">
+          <AppLogo />
+        </header>
 
-      <div className="flex items-center h-full">
         <Card className="w-full border-none shadow-none md:max-w-xs dark:bg-gray-800 md:shadow-md">
           <CardHeader className="px-4 text-center md:px-6">
             <CardTitle className="text-4xl font-semibold md:text-3xl">
@@ -153,13 +147,13 @@ export default function Login() {
             </div>
           </CardContent>
         </Card>
-
-        <img
-          src={BgImage}
-          alt="task background image illustration"
-          className="hidden size-9/12 md:block"
-        />
       </div>
+
+      <img
+        src={BgImage}
+        alt="task background image illustration"
+        className="hidden size-9/12 md:block"
+      />
     </div>
   );
 }
