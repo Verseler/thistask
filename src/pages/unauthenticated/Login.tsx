@@ -79,7 +79,7 @@ export default function Login() {
           <AppLogo />
         </header>
 
-        <Card className="w-full border-none shadow-none md:max-w-xs dark:bg-gray-800 md:shadow-md">
+        <Card className="w-screen border-none shadow-none md:max-w-xs dark:bg-gray-900 md:shadow-md">
           <CardHeader className="px-4 text-center md:px-6">
             <CardTitle className="text-4xl font-semibold md:text-3xl">
               Login
