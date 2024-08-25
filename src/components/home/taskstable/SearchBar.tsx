@@ -29,6 +29,7 @@ const SearchBar = ({ table }: SearchBarProps) => {
         size={18}
       />
       <Input
+        id="search"
         placeholder="Filter names..."
         value={searchValue}
         onChange={handleInputChange}
