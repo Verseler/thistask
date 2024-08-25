@@ -119,7 +119,7 @@ export default function TasksTable({
     <TableRow>
       {columns.map((column, index) => (
         <TableCell key={column.id + " " + index}>
-          <Skeleton className="w-full h-4" />
+          <Skeleton className="w-full h-4 my-0.5" />
         </TableCell>
       ))}
     </TableRow>
