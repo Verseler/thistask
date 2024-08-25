@@ -1,22 +1,88 @@
 import { AvatarImage, AvatarFallback, Avatar } from "@radix-ui/react-avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthProvider";
+import { toast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 
 type UserAvatarProps = {
-  src: string;
-  name: string;
+  orderReversed?: boolean;
 };
 
-const UserAvatar = ({ src, name }: UserAvatarProps) => {
-  const nameInitial = getInitials(name);
+export default function UserAvatar({ orderReversed }: UserAvatarProps) {
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
+
+  const userName = `${user?.user_metadata?.first_name} ${user?.user_metadata?.last_name}`;
+  const userProfileSrc = user?.user_metadata.avatar_url;
+  const nameInitial = getInitials(userName);
+
+  const handleLogout = async (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+
+    const { error } = await logout();
+
+    if (error) {
+      toast({
+        title: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
-    <Avatar>
-      <AvatarImage className="rounded-full " src={src} alt="user profile" />
-      <AvatarFallback>{nameInitial}</AvatarFallback>
-    </Avatar>
+    <div
+      className={cn(
+        "flex items-center gap-x-2",
+        orderReversed ? "flex-row-reverse" : "flex-row"
+      )}
+    >
+      <span className="text-sm text-gray-600 dark:text-slate-400">
+        {userName}
+      </span>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="secondary" size="icon" className="rounded-full">
+            <Avatar>
+              <AvatarImage
+                className="rounded-full "
+                src={userProfileSrc}
+                alt="user profile"
+              />
+              <AvatarFallback>{nameInitial}</AvatarFallback>
+            </Avatar>
+            <span className="sr-only">Toggle user menu</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="dark:bg-gray-800">
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem disabled onClick={() => navigate("/settings")}>
+            Settings
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={handleLogout}
+            className="text-red-600 dark:text-red-500"
+          >
+            Logout
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
-};
+}
 
-function getInitials(name: string) {
-  const nameParts = name?.split(" ") || "?";
+function getInitials(fullName: string) {
+  const nameParts = fullName?.split(" ") || "?";
 
   if (nameParts.length >= 2) {
     return nameParts[0][0]?.toUpperCase();
@@ -24,5 +90,3 @@ function getInitials(name: string) {
 
   return nameParts[0]?.toUpperCase();
 }
-
-export default UserAvatar;
