@@ -1,12 +1,5 @@
 import { X, Hash } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuContent,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+
 import { Button } from "@/components/ui/button";
 import NavItems from "./NavItems";
 import { cn } from "@/lib/utils";
@@ -14,15 +7,20 @@ import { FilteredProject } from "@/pages/authenticated/home/home.types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AppLogo from "@/components/common/AppLogo";
 import UserAvatar from "../header/UserAvatar";
-import { useAuth } from "@/context/AuthProvider";
-import { useNavigate } from "react-router-dom";
 import ThemeSwitch from "../header/ThemeSwitch";
+import AddProjectInput from "./AddProjectInput";
+import { addProject, deleteProject } from "@/services/api/projects";
+import { toast } from "@/components/ui/use-toast";
+import { useAuth } from "@/context/AuthProvider";
+import ConfirmationDialog from "@/components/common/ConfirmationDialog";
+import { useState } from "react";
 
 type SidebarProps = {
   selectedProjectId: string;
   projects: Array<any>;
+  refetchProjects: () => Promise<void>;
   filteredProjects: Array<FilteredProject>;
-  handleChangeProject: (id: string) => void;
+  changeSelectedProjectId: (id: string) => void;
   showMobileSidebar: boolean;
   toggleShowMobileSidebar: () => void;
 };
@@ -31,16 +29,68 @@ export default function Sidebar({
   selectedProjectId,
   filteredProjects,
   projects,
-  handleChangeProject,
+  refetchProjects,
+  changeSelectedProjectId,
   showMobileSidebar,
   toggleShowMobileSidebar,
 }: SidebarProps) {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
-  const userName = `${user?.user_metadata?.first_name} ${user?.user_metadata?.last_name}`;
-  const userProfile = user?.user_metadata.avatar_url;
-  const userEmail = user?.email;
+  const showDeleteDialog = () => setIsDialogOpen(true);
+  const hideDeleteDialog = () => setIsDialogOpen(false);
+
+  const handleAddProject = async (projectName: string) => {
+    if (!user) {
+      toast({
+        title: "Error: You are not signed in",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { error } = await addProject(projectName, user?.id);
+
+    if (error) {
+      toast({
+        title: "Error: unable to add new project",
+        description: error.message,
+      });
+    } else {
+      refetchProjects();
+      toast({
+        title: "Project added successfully",
+        duration: 1500,
+      });
+    }
+  };
+
+  const handleDeleteProject = async () => {
+    if (!user) {
+      toast({
+        title: "Error: You are not signed in",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { error } = await deleteProject(selectedProjectId);
+
+    if (error) {
+      toast({
+        title: "Error: unable to delete project",
+        description: error.message,
+      });
+    } else {
+      changeSelectedProjectId(filteredProjects[0].id);
+      refetchProjects();
+      hideDeleteDialog();
+      toast({
+        title: "Project deleted successfully",
+        duration: 1500,
+      });
+    }
+  };
 
   /*
    *
@@ -53,7 +103,8 @@ export default function Sidebar({
         key={index}
         name={project?.name}
         isActive={selectedProjectId == project?.id}
-        onClick={() => handleChangeProject(project?.id)}
+        showDelete={false}
+        onClick={() => changeSelectedProjectId(project?.id)}
         icon={project?.icon}
       />
     );
@@ -70,8 +121,9 @@ export default function Sidebar({
       key={index}
       name={project?.name}
       isActive={selectedProjectId === project?.id}
-      onClick={() => handleChangeProject(project?.id)}
-      // onClickDeletion={() => deleteProject(project?.id)}
+      onClick={() => changeSelectedProjectId(project?.id)}
+      onClickDeletion={showDeleteDialog}
+      showDelete={selectedProjectId === project?.id}
       icon={<Hash className="mr-2 md:size-4" />}
     />
   ));
@@ -86,45 +138,11 @@ export default function Sidebar({
       )}
     >
       <nav className="py-2 space-y-4">
-        <div className="px-4 py-1 md:py-2">
+        <div className="px-2 py-1 md:px-4 md:py-2">
           <AppLogo className="hidden mb-6 md:flex" />
 
-          <div className="flex items-center justify-between mb-8 md:hidden">
-            <div className="space-x-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    className="rounded-full"
-                  >
-                    <UserAvatar src={userProfile} name={userName} />
-                    <span className="sr-only">Toggle user menu</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="dark:bg-gray-800">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    disabled
-                    onClick={() => navigate("/settings")}
-                  >
-                    Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={logout}
-                    className="text-red-600 dark:text-red-500"
-                  >
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              <span className="text-gray-600 md:text-sm dark:text-slate-400">
-                {userEmail}
-              </span>
-            </div>
+          <div className="flex items-center justify-between mb-8 md:hidden mobile-content">
+            <UserAvatar orderReversed />
 
             <div className="flex items-center">
               <ThemeSwitch className="mr-2" />
@@ -139,23 +157,22 @@ export default function Sidebar({
             </div>
           </div>
 
-          {/* <AddTaskInput
-            value={newProjectName}
-            onValueChange={setNewProjectName}
-            handleSubmit={addProject}
-            loading={loading}
-          /> */}
+          <AddProjectInput onAddProject={handleAddProject} />
 
-          <div className="mt-6 mb-8 space-y-1">{RenderFilteredProjects}</div>
+          <div className="mt-4 space-y-1 mb-7">{RenderFilteredProjects}</div>
 
-          <div className="py-2">
-            <ScrollArea className="h-[300px]">
-              {ProjectSectionLabel}
-              <div className="space-y-1">{RenderProjects}</div>
-            </ScrollArea>
-          </div>
+          <ScrollArea className="py-2 h-72">
+            {ProjectSectionLabel}
+            <div className="space-y-1">{RenderProjects}</div>
+          </ScrollArea>
         </div>
       </nav>
+
+      <ConfirmationDialog
+        open={isDialogOpen}
+        setOpen={setIsDialogOpen}
+        onClickConfirm={handleDeleteProject}
+      />
     </div>
   );
 }

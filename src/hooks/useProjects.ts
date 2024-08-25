@@ -9,32 +9,32 @@ export default function useProjects(filteredProjects: Array<FilteredProject>) {
   const [projects, setProjects] = useState<Array<Project>>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>(filteredProjects[0].id);
 
-  const handleChangeProject = (projectId: string): void =>
+  const changeSelectedProjectId = (projectId: string): void =>
     setSelectedProjectId(projectId);
 
-  useEffect(() => {
-    const fetchProjects = async (): Promise<void> => {
-      if (user) {
-        const { data: projects, error } = await getProjects(user?.id);
+  const fetchProjects = async (): Promise<void> => {
+    if (user) {
+      const { data: projects, error } = await getProjects(user?.id);
 
-        if (error) {
-          toast({
-            title: "Fetching Projects Error",
-            description: error.message,
-          });
-          return;
-        }
-
-        if (projects) {
-          setProjects(projects);
-        }
+      if (error) {
+        toast({
+          title: "Fetching Projects Error",
+          description: error.message,
+        });
+        return;
       }
-    };
 
+      if (projects) {
+        setProjects(projects);
+      }
+    }
+  };
+
+  useEffect(() => {
     fetchProjects();
   }, []);
 
-  return ({projects, selectedProjectId, handleChangeProject, });
+  return ({projects, selectedProjectId, changeSelectedProjectId, refetchProjects : fetchProjects});
 }
 
 

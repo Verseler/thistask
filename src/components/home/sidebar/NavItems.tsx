@@ -8,6 +8,7 @@ type NavItemsProps = {
   isActive: boolean;
   onClick: () => void;
   onClickDeletion?: () => void;
+  showDelete: boolean;
 };
 
 const NavItems = ({
@@ -16,6 +17,7 @@ const NavItems = ({
   isActive,
   onClick,
   onClickDeletion,
+  showDelete
 }: NavItemsProps) => {
   const VARIANT_STYLE: ButtonProps["variant"] = isActive ? "default" : "ghost";
   const ACTIVE_STYLE: string = isActive
@@ -38,10 +40,10 @@ const NavItems = ({
           {name}
         </span>
       </Button>
-      {onClickDeletion && (
+      {showDelete && (
         <Trash
           onClick={onClickDeletion}
-          className="absolute hidden text-red-500 cursor-pointer top-4 md:top-2 right-4 md:right-2 size-4 group-hover:block"
+          className="absolute hidden text-red-700 cursor-pointer dark:text-red-900 top-4 md:top-2 right-4 md:right-2 size-4 group-hover:block"
         />
       )}
     </div>
