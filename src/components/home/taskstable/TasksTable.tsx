@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import {
   type ColumnFilter,
   type ColumnSort,
@@ -23,17 +24,22 @@ import columns from "./columns";
 import { type Task } from "@/pages/authenticated/home/home.types";
 import TableFooter from "./TableFooter";
 import TopHeader from "./TableHeader";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type TasksTableProps = {
-  data: Array<Task>;
+  tasks: Array<Task>;
   projectTitle: string;
-  handleShowTaskView: () => void;
+  showTaskView: () => void;
+  changeSelectedTaskId: (taskId: string) => void;
+  loadingFetchingTask: boolean;
 };
 
 export default function TasksTable({
-  data,
+  tasks,
   projectTitle,
-  handleShowTaskView,
+  showTaskView,
+  changeSelectedTaskId,
+  loadingFetchingTask,
 }: TasksTableProps) {
   const [sorting, setSorting] = useState<Array<ColumnSort>>([]);
   const [columnFilters, setColumnFilters] = useState<Array<ColumnFilter>>([]);
@@ -41,7 +47,7 @@ export default function TasksTable({
   const [rowSelection, setRowSelection] = useState({});
 
   const table: Table<Task> = useReactTable({
-    data,
+    data: tasks,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -58,6 +64,11 @@ export default function TasksTable({
       rowSelection,
     },
   });
+
+  const handleShowTaskView = (taskId: string) => {
+    showTaskView();
+    changeSelectedTaskId(taskId);
+  };
 
   /*
    *
@@ -83,7 +94,7 @@ export default function TasksTable({
       <TableRow
         key={row.id}
         data-state={row.getIsSelected() && "selected"}
-        // onClick={() => handleShowTaskView(row.original)}
+        onClick={() => handleShowTaskView(row.original.id)}
         className="h-12 md:h-auto dark:text-gray-300 dark:border-gray-700"
       >
         {row.getVisibleCells().map((cell) => (
@@ -95,9 +106,22 @@ export default function TasksTable({
     ))
   ) : (
     <TableRow>
-      <TableCell className="h-8 text-center dark:text-gray-400">
+      <TableCell
+        colSpan={columns.length}
+        className="h-8 text-center dark:text-gray-400"
+      >
         No results.
       </TableCell>
+    </TableRow>
+  );
+
+  const renderSkeletonPlaceholder = (
+    <TableRow>
+      {columns.map((column, index) => (
+        <TableCell key={column.id + " " + index}>
+          <Skeleton className="w-full h-4" />
+        </TableCell>
+      ))}
     </TableRow>
   );
 
@@ -105,14 +129,17 @@ export default function TasksTable({
     <div className="w-full px-4 bg-white border border-gray-200 rounded-lg md:px-6 dark:bg-gray-800 dark:border-gray-700">
       <TopHeader
         projectTitle={projectTitle}
-        data={data}
+        data={tasks}
         table={table}
-        handleShowTaskView={handleShowTaskView}
+        showTaskView={showTaskView}
       />
       <div className="border rounded-md dark:border-gray-700">
         <TableContainer>
           <TableHeader>{renderTableHeader}</TableHeader>
-          <TableBody>{renderTableBody}</TableBody>
+
+          <TableBody>
+            {loadingFetchingTask ? renderSkeletonPlaceholder : renderTableBody}
+          </TableBody>
         </TableContainer>
       </div>
       <TableFooter table={table} />
