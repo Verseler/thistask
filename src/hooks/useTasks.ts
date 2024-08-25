@@ -8,45 +8,40 @@ import { getAllTasks, getProjectTask } from "@/services/api/tasks";
 function useTasks(filteredProjects: Array<FilteredProject>, selectedProjectId: string) {
   const {user} = useAuth()
   const [tasks, setTasks] = useState<Array<Task>>([]);
+  const [loadingFetchingTask, setLoadingFetchingTask] = useState<boolean>(false);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const selectedTask: Task | null  = tasks.find((task) => task.id === selectedTaskId) as Task;
+
+  const changeSelectedTaskId = (taskId: string): void => setSelectedTaskId(taskId); 
+
+  const clearSelectedTaskId = (): void => setSelectedTaskId(null);
 
   useEffect(() => {
-    const isSelectedProjectIsAFilteredProject = filteredProjects.find(
-      (project) => project.id === selectedProjectId
-    );
-
-    if (isSelectedProjectIsAFilteredProject) {
-      fetchAllTasks();
-    } else {
-      fetchProjectTasks();
-    }
+    fetchTasks();
 
   }, [selectedProjectId]);
 
+  const fetchTasks = async () => {
+    const isSelectedProjectIsAFilteredProject = filteredProjects.find(
+      (project) => project.id === selectedProjectId
+    ) !== undefined;
+
+
+    if (isSelectedProjectIsAFilteredProject) {
+      handleGetAllTasks()
+    } else {
+      handleGetProjectTasks()
+    }
+  };
   
-const fetchAllTasks = async () => {
-  if (user) {
-    const { data: tasks, error } = await getAllTasks(user.id);
 
-    if (error) {
-      toast({
-        title: "Error: Unable to fetch tasks",
-        description: error.message,
-      });
-    }
-    if (tasks) {
-      setTasks(tasks);
-    }
-  } else {
-    toast({
-      title: "You are not signed in",
-      variant: "destructive",
-    });
-  }
-};
-
-const fetchProjectTasks = async () => {
-  const { data: tasks, error } = await getProjectTask(selectedProjectId);
-
+  
+const handleGetProjectTasks = async () => {
+  try {
+    setLoadingFetchingTask(true);
+    const { data, error } = await getProjectTask(selectedProjectId);
+  const tasks = data as Array<Task>;
+  
   if (error) {
     toast({
       title: "Error: Unable to fetch tasks",
@@ -57,9 +52,80 @@ const fetchProjectTasks = async () => {
   if (tasks) {
     setTasks(tasks);
   }
+  }
+  catch(err) {
+    const error = err as Error
+    toast({
+      title: "Error: Unable to fetch tasks",
+      description: error.message,
+    });
+  }
+  finally {
+    setLoadingFetchingTask(false);
+  }
 };
 
-  return ({tasks});
+  
+const handleGetAllTasks = async () => {
+  try {
+    setLoadingFetchingTask(true);
+
+    if (user) {
+      const { data, error } = await getAllTasks(user.id);
+      const tasks = data as Array<Task>
+  
+      if (error) {
+        toast({
+          title: "Error: Unable to fetch tasks",
+          description: error.message,
+        });
+      }
+      if (tasks) {
+        const currentDate = new Date();
+  
+        if(selectedProjectId === "today") {
+          const filteredTasks: Task[] = tasks.filter(
+            (task) => new Date(task.due_date as string).toDateString() === currentDate.toDateString())
+  
+          setTasks(filteredTasks);
+        }
+        else if(selectedProjectId === "tomorrow") {
+          const tomorrowDate =  currentDate.setDate(currentDate.getDate() + 1);
+          const filteredTasks: Task[] = tasks.filter(
+            (task) => new Date(task.due_date as string).toDateString() === new Date(tomorrowDate).toDateString())
+            
+          setTasks(filteredTasks);
+        }
+        else if(selectedProjectId === "completed") {
+          const filteredTasks: Task[] = tasks.filter((task) => task.status === "Completed")
+          setTasks(filteredTasks);
+        }
+        else {
+          setTasks(tasks);
+        }
+      }
+    } else {
+      toast({
+        title: "You are not signed in",
+        variant: "destructive",
+      });
+    }
+  }
+  catch(err) {
+    const error = err as Error
+    toast({
+      title: "Error: Unable to fetch tasks",
+      description: error.message,
+    });
+  }
+  finally {
+    setLoadingFetchingTask(false);
+  }
+};
+
+
+
+  return ({tasks, changeSelectedTaskId, clearSelectedTaskId, selectedTask,  refetchTasks: fetchTasks, loadingFetchingTask});
 }
 
 

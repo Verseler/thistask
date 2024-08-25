@@ -11,21 +11,36 @@ import useProjects from "@/hooks/useProjects";
 import useTasks from "@/hooks/useTasks";
 import TasksTable from "@/components/home/taskstable";
 import { useState } from "react";
+import TaskView from "@/components/home/taskview";
 
 export default function Home() {
-  const { projects, handleChangeProject, selectedProjectId } =
-    useProjects(filteredProjects);
-  const { tasks } = useTasks(filteredProjects, selectedProjectId);
+  const {
+    projects,
+    changeSelectedProjectId,
+    selectedProjectId,
+    refetchProjects,
+  } = useProjects(filteredProjects);
+  const {
+    tasks,
+    refetchTasks,
+    loadingFetchingTask,
+    changeSelectedTaskId,
+    selectedTask,
+    clearSelectedTaskId,
+  } = useTasks(filteredProjects, selectedProjectId);
   const [showMobileSidebar, setShowMobileSidebar] = useState<boolean>(false);
-  const [showTaskView, setShowTaskView] = useState<boolean>(false);
+  const [isTaskViewVisible, setIsTaskViewVisible] = useState<boolean>(false);
 
   const toggleShowMobileSidebar = () =>
     setShowMobileSidebar(!showMobileSidebar);
-  const toggleShowTaskView = () => setShowTaskView(!showTaskView);
 
-  const selectedProjectTitle = [...filteredProjects, ...projects].find(
-    (project) => project.id === selectedProjectId
-  )?.name;
+  const hideTaskView = () => setIsTaskViewVisible(false);
+  const showTaskView = () => setIsTaskViewVisible(true);
+
+  const selectedProjectTitle: string =
+    [...filteredProjects, ...projects].find(
+      (project) => project.id === selectedProjectId
+    )?.name || filteredProjects[0].name;
 
   return (
     <div className="flex h-[100svh] dark:bg-gray-900">
@@ -33,7 +48,8 @@ export default function Home() {
         selectedProjectId={selectedProjectId}
         filteredProjects={filteredProjects}
         projects={projects}
-        handleChangeProject={handleChangeProject}
+        refetchProjects={refetchProjects}
+        changeSelectedProjectId={changeSelectedProjectId}
         showMobileSidebar={showMobileSidebar}
         toggleShowMobileSidebar={toggleShowMobileSidebar}
       />
@@ -42,12 +58,24 @@ export default function Home() {
         <Header toggleShowMobileSidebar={toggleShowMobileSidebar} />
         <main className="px-3 py-8 md:py-10 md:container md:px-5 lg:px-7">
           <TasksTable
-            projectTitle={selectedProjectTitle || filteredProjects[0].name}
-            data={tasks}
-            handleShowTaskView={toggleShowTaskView}
+            projectTitle={selectedProjectTitle}
+            tasks={tasks}
+            showTaskView={showTaskView}
+            changeSelectedTaskId={changeSelectedTaskId}
+            loadingFetchingTask={loadingFetchingTask}
           />
         </main>
       </div>
+
+      <TaskView
+        isVisible={isTaskViewVisible}
+        close={hideTaskView}
+        selectedTask={selectedTask}
+        clearSelectedTaskId={clearSelectedTaskId}
+        projects={projects}
+        hideTaskView={hideTaskView}
+        refetchTasks={refetchTasks}
+      />
     </div>
   );
 }
