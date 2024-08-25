@@ -157,7 +157,7 @@ export default function Sidebar({
             </div>
           </div>
 
-          <AddProjectInput onAddProject={handleAddProject} />
+          <AddProjectInput onAddProject={handleAddProject} className="mt-8" />
 
           <div className="mt-4 space-y-1 mb-7">{RenderFilteredProjects}</div>
 

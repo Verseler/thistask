@@ -2,15 +2,18 @@ import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { HTMLProps, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 
 type AddProjectInputProps = {
   onAddProject: (projectName: string) => Promise<void>;
+  className?: HTMLProps<HTMLElement>["className"];
 };
 
 export default function AddProjectInput({
   onAddProject,
+  className,
 }: AddProjectInputProps) {
   const [projectName, setProjectName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -40,7 +43,10 @@ export default function AddProjectInput({
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex items-center w-full border rounded-md md:py-0 dark:border-gray-700 focus-within:ring-1 focus-within:ring-ring focus-within:ring-black dark:focus-within:ring-gray-400 dark:bg-gray-800"
+      className={cn(
+        "flex items-center w-full border rounded-md md:py-0 dark:border-gray-700 focus-within:ring-1 focus-within:ring-ring focus-within:ring-black dark:focus-within:ring-gray-400 dark:bg-gray-800",
+        className
+      )}
     >
       <Input
         placeholder="Add Project"
