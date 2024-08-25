@@ -23,7 +23,7 @@ export default function NotFound() {
 
           <div className="flex items-center mt-6 gap-x-3">
             <Button
-              className="space-x-2.5"
+              className="space-x-2.5 dark:bg-gray-900 dark:text-white dark:border-gray-600"
               variant="outline"
               onClick={() => navigation(-1)}
             >
