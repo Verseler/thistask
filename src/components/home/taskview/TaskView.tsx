@@ -32,6 +32,9 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "@/components/ui/use-toast";
 import { upsertTask } from "@/services/api/tasks";
 import TaskViewHeader from "./TaskViewHeader";
+import AddProjectInput from "../sidebar/AddProjectInput";
+import { addProject } from "@/services/api/projects";
+import { useAuth } from "@/context/AuthProvider";
 
 type TaskViewProps = {
   projects: Array<Project>;
@@ -41,6 +44,7 @@ type TaskViewProps = {
   clearSelectedTaskId: () => void;
   hideTaskView: () => void;
   refetchTasks: () => Promise<void>;
+  refetchProjects: () => Promise<void>;
 };
 
 export default function TaskView({
@@ -51,6 +55,7 @@ export default function TaskView({
   clearSelectedTaskId,
   hideTaskView,
   refetchTasks,
+  refetchProjects,
 }: TaskViewProps) {
   const {
     register,
@@ -60,6 +65,7 @@ export default function TaskView({
     formState: { errors },
   } = useForm<Task>();
   const [loading, setLoading] = useState<boolean>(false);
+  const { user } = useAuth();
 
   const onSubmit: SubmitHandler<Task> = async (data): Promise<void> => {
     try {
@@ -127,6 +133,31 @@ export default function TaskView({
       clearSelectedTaskId();
     }
   }, [isVisible, reset]);
+
+  const handleAddProject = async (projectName: string) => {
+    if (!user) {
+      toast({
+        title: "Error: You are not signed in",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { error } = await addProject(projectName, user?.id);
+
+    if (error) {
+      toast({
+        title: "Error: unable to add new project",
+        description: error.message,
+      });
+    } else {
+      refetchProjects();
+      toast({
+        title: "Project added successfully",
+        duration: 1500,
+      });
+    }
+  };
 
   //handle keyboard escape keyboard key event
   useEffect(() => {
@@ -210,11 +241,6 @@ export default function TaskView({
                     rules={{ required: true }}
                     defaultValue={projects[0]?.id}
                     render={({ field: { onChange, value } }) => {
-                      const selectPlaceholder =
-                        projects.length === 0
-                          ? "No projects"
-                          : "Select a project";
-
                       const renderProjectSelectItems = projects.map(
                         (project) => (
                           <SelectItemOption
@@ -233,14 +259,12 @@ export default function TaskView({
                           required
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder={selectPlaceholder} />
+                            <SelectValue placeholder="Select a project" />
                           </SelectTrigger>
 
                           <SelectContent>
                             {projects.length === 0 ? (
-                              <Button type="button" className="w-full">
-                                Create New Project
-                              </Button>
+                              <AddProjectInput onAddProject={handleAddProject} className="max-w-80 mx-auto md:max-w-[15.5rem]"  />
                             ) : (
                               renderProjectSelectItems
                             )}

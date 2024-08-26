@@ -75,6 +75,7 @@ export default function Home() {
         projects={projects}
         hideTaskView={hideTaskView}
         refetchTasks={refetchTasks}
+        refetchProjects={refetchProjects}
       />
     </div>
   );

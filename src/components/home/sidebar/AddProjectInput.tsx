@@ -44,13 +44,13 @@ export default function AddProjectInput({
     <form
       onSubmit={handleSubmit}
       className={cn(
-        "flex items-center w-full border rounded-md md:py-0 dark:border-gray-700 focus-within:ring-1 focus-within:ring-ring focus-within:ring-black dark:focus-within:ring-gray-400 dark:bg-gray-800",
+        "flex items-center border rounded-md md:py-0 dark:border-gray-700 focus-within:ring-1 focus-within:ring-ring focus-within:ring-black dark:focus-within:ring-gray-400 dark:bg-gray-800",
         className
       )}
     >
       <Input
         placeholder="Add Project"
-        className="border-none shadow-none focus-visible:ring-0 dark:text-white "
+        className="border-none shadow-none focus-visible:ring-0 dark:text-white"
         value={projectName}
         maxLength={18}
         onChange={(e) => setProjectName(e.target.value)}
