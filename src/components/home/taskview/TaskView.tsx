@@ -264,7 +264,10 @@ export default function TaskView({
 
                           <SelectContent>
                             {projects.length === 0 ? (
-                              <AddProjectInput onAddProject={handleAddProject} className="max-w-80 mx-auto md:max-w-[15.5rem]"  />
+                              <AddProjectInput
+                                onAddProject={handleAddProject}
+                                className="max-w-80 mx-auto md:max-w-[15.5rem]"
+                              />
                             ) : (
                               renderProjectSelectItems
                             )}
@@ -355,7 +358,7 @@ export default function TaskView({
                   className="gap-1.5 w-full md:w-auto text-base md:text-sm"
                   disabled={loading}
                 >
-                  Save Task
+                  {selectedTask ? "Save Changes" : "Add Task"}
                   <CornerDownLeft className="size-5 md:size-3.5" />
                 </Button>
               </div>

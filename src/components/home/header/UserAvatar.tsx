@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthProvider";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import { getFirstNameInitial } from "./header.helper";
 
 type UserAvatarProps = {
   orderReversed?: boolean;
@@ -20,10 +21,12 @@ type UserAvatarProps = {
 export default function UserAvatar({ orderReversed }: UserAvatarProps) {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
+  const firstName: string = user?.user_metadata?.first_name;
+  const lastName: string = user?.user_metadata?.last_name;
 
-  const userName = `${user?.user_metadata?.first_name} ${user?.user_metadata?.last_name}`;
+  const userName = `${firstName} ${lastName}`;
   const userProfileSrc = user?.user_metadata.avatar_url;
-  const nameInitial = getInitials(userName);
+  const nameInitial = getFirstNameInitial(userName);
 
   const handleLogout = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -79,14 +82,4 @@ export default function UserAvatar({ orderReversed }: UserAvatarProps) {
       </DropdownMenu>
     </div>
   );
-}
-
-function getInitials(fullName: string) {
-  const nameParts = fullName?.split(" ") || "?";
-
-  if (nameParts.length >= 2) {
-    return nameParts[0][0]?.toUpperCase();
-  }
-
-  return nameParts[0]?.toUpperCase();
 }

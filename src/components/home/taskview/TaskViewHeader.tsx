@@ -109,6 +109,9 @@ function TaskViewHeader({
         open={isDialogOpen}
         setOpen={setIsDialogOpen}
         onClickConfirm={onSubmit}
+        desc="This action cannot be undone. This will permanently delete the task."
+        confirmLabel="Delete"
+        confirmStyle="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500"
       />
     </>
   );
