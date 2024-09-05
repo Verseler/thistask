@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { type Task, type FilteredProject } from "@/pages/authenticated/home/home.types";
 import { useAuth } from "@/context/AuthProvider";
 import { toast } from "@/components/ui/use-toast";
-import { getAllTasks, getProjectTask } from "@/services/api/tasks";
+import { getAllTasks, getProjectTasks } from "@/services/api/tasks";
 
 function useTasks(filteredProjects: Array<FilteredProject>, selectedProjectId: string) {
   const {user} = useAuth()
@@ -39,7 +39,7 @@ function useTasks(filteredProjects: Array<FilteredProject>, selectedProjectId: s
 const handleGetProjectTasks = async () => {
   try {
     setLoadingFetchingTask(true);
-    const { data, error } = await getProjectTask(selectedProjectId);
+    const { data, error } = await getProjectTasks(selectedProjectId);
   const tasks = data as Array<Task>;
   
   if (error) {

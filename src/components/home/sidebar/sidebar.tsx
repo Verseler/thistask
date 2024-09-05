@@ -172,6 +172,9 @@ export default function Sidebar({
         open={isDialogOpen}
         setOpen={setIsDialogOpen}
         onClickConfirm={handleDeleteProject}
+        desc="This action cannot be undone. This will permanently delete the project."
+        confirmLabel="Delete"
+        confirmStyle="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500"
       />
     </div>
   );
