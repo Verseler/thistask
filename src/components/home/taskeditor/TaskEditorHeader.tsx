@@ -14,17 +14,17 @@ import { deleteTask } from "@/services/api/tasks";
 import { toast } from "@/components/ui/use-toast";
 import ConfirmationDialog from "@/components/common/ConfirmationDialog";
 
-type TaskViewHeaderProps = {
+type TaskEditorHeaderProps = {
   close: () => void;
   selectedTaskId: string | undefined;
   refetchTasks: () => Promise<void>;
 };
 
-function TaskViewHeader({
+function TaskEditorHeader({
   close,
   selectedTaskId,
   refetchTasks,
-}: TaskViewHeaderProps) {
+}: TaskEditorHeaderProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
@@ -117,4 +117,4 @@ function TaskViewHeader({
   );
 }
 
-export default TaskViewHeader;
+export default TaskEditorHeader;

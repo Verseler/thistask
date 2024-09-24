@@ -4,14 +4,14 @@ import {
   CalendarArrowUp,
   CircleCheck,
 } from "lucide-react";
-import Sidebar from "@/components/home/sidebar";
-import Header from "@/components/home/header";
+import Sidebar from "@/components/home/sidebar/Sidebar";
+import Header from "@/components/home/header/Header";
 import { type FilteredProject } from "./home.types";
 import useProjects from "@/hooks/useProjects";
 import useTasks from "@/hooks/useTasks";
-import TasksTable from "@/components/home/taskstable";
+import TasksTable from "@/components/home/taskstable/TasksTable";
 import { useState } from "react";
-import TaskView from "@/components/home/taskview";
+import TaskEditor from "@/components/home/taskeditor/TaskEditor";
 
 export default function Home() {
   const {
@@ -29,13 +29,14 @@ export default function Home() {
     clearSelectedTaskId,
   } = useTasks(filteredProjects, selectedProjectId);
   const [showMobileSidebar, setShowMobileSidebar] = useState<boolean>(false);
-  const [isTaskViewVisible, setIsTaskViewVisible] = useState<boolean>(false);
+  const [isTaskEditorVisible, setIsTaskEditorVisible] =
+    useState<boolean>(false);
 
   const toggleShowMobileSidebar = () =>
     setShowMobileSidebar(!showMobileSidebar);
 
-  const hideTaskView = () => setIsTaskViewVisible(false);
-  const showTaskView = () => setIsTaskViewVisible(true);
+  const hideTaskEditor = () => setIsTaskEditorVisible(false);
+  const showTaskEditor = () => setIsTaskEditorVisible(true);
 
   const selectedProjectTitle: string =
     [...filteredProjects, ...projects].find(
@@ -60,20 +61,20 @@ export default function Home() {
           <TasksTable
             projectTitle={selectedProjectTitle}
             tasks={tasks}
-            showTaskView={showTaskView}
+            showTaskEditor={showTaskEditor}
             changeSelectedTaskId={changeSelectedTaskId}
             loadingFetchingTask={loadingFetchingTask}
           />
         </main>
       </div>
 
-      <TaskView
-        isVisible={isTaskViewVisible}
-        close={hideTaskView}
+      <TaskEditor
+        isVisible={isTaskEditorVisible}
+        close={hideTaskEditor}
         selectedTask={selectedTask}
         clearSelectedTaskId={clearSelectedTaskId}
         projects={projects}
-        hideTaskView={hideTaskView}
+        hideTaskEditor={hideTaskEditor}
         refetchTasks={refetchTasks}
         refetchProjects={refetchProjects}
       />

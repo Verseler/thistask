@@ -16,14 +16,14 @@ type TopHeaderProps = {
   projectTitle: string;
   data: Array<Task>;
   table: Table<Task>;
-  showTaskView: () => void;
+  showTaskEditor: () => void;
 };
 
 export default function TopHeader({
   projectTitle,
   data,
   table,
-  showTaskView,
+  showTaskEditor,
 }: TopHeaderProps) {
   const renderColumnFilterOptions = table
     .getAllColumns()
@@ -61,7 +61,7 @@ export default function TopHeader({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Button onClick={showTaskView}>
+        <Button onClick={showTaskEditor}>
           <Plus className="md:mr-2 md:size-4" />
           <span className="hidden md:block">Add task</span>
         </Button>

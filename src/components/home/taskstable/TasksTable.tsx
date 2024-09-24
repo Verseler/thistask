@@ -29,7 +29,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 type TasksTableProps = {
   tasks: Array<Task>;
   projectTitle: string;
-  showTaskView: () => void;
+  showTaskEditor: () => void;
   changeSelectedTaskId: (taskId: string) => void;
   loadingFetchingTask: boolean;
 };
@@ -37,7 +37,7 @@ type TasksTableProps = {
 export default function TasksTable({
   tasks,
   projectTitle,
-  showTaskView,
+  showTaskEditor,
   changeSelectedTaskId,
   loadingFetchingTask,
 }: TasksTableProps) {
@@ -65,8 +65,8 @@ export default function TasksTable({
     },
   });
 
-  const handleShowTaskView = (taskId: string) => {
-    showTaskView();
+  const handleShowTaskEditor = (taskId: string) => {
+    showTaskEditor();
     changeSelectedTaskId(taskId);
   };
 
@@ -94,7 +94,7 @@ export default function TasksTable({
       <TableRow
         key={row.id}
         data-state={row.getIsSelected() && "selected"}
-        onClick={() => handleShowTaskView(row.original.id)}
+        onClick={() => handleShowTaskEditor(row.original.id)}
         className="h-12 md:h-auto dark:text-gray-300 dark:border-gray-700"
       >
         {row.getVisibleCells().map((cell) => (
@@ -131,7 +131,7 @@ export default function TasksTable({
         projectTitle={projectTitle}
         data={tasks}
         table={table}
-        showTaskView={showTaskView}
+        showTaskEditor={showTaskEditor}
       />
       <div className="border rounded-md dark:border-gray-700">
         <TableContainer>

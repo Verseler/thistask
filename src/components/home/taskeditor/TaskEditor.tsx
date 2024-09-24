@@ -31,32 +31,32 @@ import { Project, Task } from "@/pages/authenticated/home/home.types";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "@/components/ui/use-toast";
 import { upsertTask } from "@/services/api/tasks";
-import TaskViewHeader from "./TaskViewHeader";
+import TaskEditorHeader from "./TaskEditorHeader";
 import AddProjectInput from "../sidebar/AddProjectInput";
 import { addProject } from "@/services/api/projects";
 import { useAuth } from "@/context/AuthProvider";
 
-type TaskViewProps = {
+type TaskEditorProps = {
   projects: Array<Project>;
   isVisible: boolean;
   close: () => void;
   selectedTask: Task | null;
   clearSelectedTaskId: () => void;
-  hideTaskView: () => void;
+  hideTaskEditor: () => void;
   refetchTasks: () => Promise<void>;
   refetchProjects: () => Promise<void>;
 };
 
-export default function TaskView({
+export default function TaskEditor({
   projects,
   isVisible,
   close,
   selectedTask,
   clearSelectedTaskId,
-  hideTaskView,
+  hideTaskEditor,
   refetchTasks,
   refetchProjects,
-}: TaskViewProps) {
+}: TaskEditorProps) {
   const {
     register,
     handleSubmit,
@@ -102,7 +102,7 @@ export default function TaskView({
       });
     } finally {
       setLoading(false);
-      hideTaskView();
+      hideTaskEditor();
     }
   };
 
@@ -161,22 +161,22 @@ export default function TaskView({
 
   //handle keyboard escape keyboard key event
   useEffect(() => {
-    const exitTaskView = (event: KeyboardEvent) => {
+    const exitTaskEditor = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         close();
       }
     };
 
-    document.addEventListener("keydown", exitTaskView);
+    document.addEventListener("keydown", exitTaskEditor);
 
-    return () => document.removeEventListener("keydown", exitTaskView);
+    return () => document.removeEventListener("keydown", exitTaskEditor);
   }, []);
 
   return (
     <Modal open={isVisible}>
       <ModalContent>
         <ModalHeader>
-          <TaskViewHeader
+          <TaskEditorHeader
             close={close}
             selectedTaskId={selectedTask?.id}
             refetchTasks={refetchTasks}
