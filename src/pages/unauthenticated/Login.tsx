@@ -95,17 +95,21 @@ export default function Login() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
+            <form
+              noValidate
+              onSubmit={handleSubmit(onSubmit)}
+              className="grid gap-4"
+            >
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   {...register("email", registerOptions.email)}
                   type="email"
-                  required
                   placeholder="m@example.com"
                   autoComplete="email"
                   disabled={loading}
+                  hasError={!!errors.email}
                 />
                 {errors.email && (
                   <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -128,6 +132,7 @@ export default function Login() {
                   required
                   autoComplete="current-password"
                   disabled={loading}
+                  hasError={!!errors.password}
                 />
                 {errors.password && (
                   <p className="text-sm text-red-500">

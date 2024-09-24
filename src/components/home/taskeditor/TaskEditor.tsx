@@ -207,6 +207,7 @@ export default function TaskEditor({
                     onChange={onChange}
                     value={value || ""}
                     disabled={loading}
+                    hasError={!!errors.name}
                   />
                 )}
               />
