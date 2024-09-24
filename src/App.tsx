@@ -4,16 +4,15 @@ import { Toaster } from "./components/ui/toaster";
 import NotFound from "@/pages/NotFound";
 import Login from "@/pages/unauthenticated/Login";
 import Register from "@/pages/unauthenticated/Register";
-import AuthRoute from "./components/auth/AuthRoute";
-import Home from "./pages/authenticated/home";
+import AuthRoute from "@/components/auth/AuthRoute";
+import Home from "./pages/authenticated/home/Home";
 
 const App = () => {
   return (
     <div className="bg-white dark:bg-gray-900">
       <Routes>
-        <Route element={<AuthRoute />}>
-          <Route path="/" element={<Home />} />
-          <Route path="*" element={<NotFound />} />
+        <Route path="/" element={<AuthRoute />}>
+          <Route index element={<Home />} />
         </Route>
         <Route path="register" element={<Register />} />
         <Route path="login" element={<Login />} />
