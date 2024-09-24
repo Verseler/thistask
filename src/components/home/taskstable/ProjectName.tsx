@@ -1,9 +1,9 @@
-type ProjectTitleProps = {
+type ProjectNameProps = {
   children?: React.ReactNode;
   count: number;
 };
 
-export default function ProjectTitle({ children, count }: ProjectTitleProps) {
+export default function ProjectName({ children, count }: ProjectNameProps) {
   return (
     <div>
       <div className="flex items-center gap-x-2 md:gap-x-3 dark:text-white">

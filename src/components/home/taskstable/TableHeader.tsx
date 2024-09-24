@@ -7,20 +7,20 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import ProjectTitle from "@/components/home/taskstable/ProjectTitle";
+import ProjectName from "@/components/home/taskstable/ProjectName";
 import SearchBar from "@/components/home/taskstable/SearchBar";
 import { Task } from "@/pages/authenticated/home/home.types";
 import { Table } from "@tanstack/react-table";
 
 type TopHeaderProps = {
-  projectTitle: string;
+  projectName: string;
   data: Array<Task>;
   table: Table<Task>;
   showTaskEditor: () => void;
 };
 
 export default function TopHeader({
-  projectTitle,
+  projectName,
   data,
   table,
   showTaskEditor,
@@ -43,7 +43,7 @@ export default function TopHeader({
 
   return (
     <div className="flex flex-col justify-between py-4 gap-y-4 xl:gap-y-0 xl:items-center xl:flex-row">
-      <ProjectTitle count={data?.length}>{projectTitle}</ProjectTitle>
+      <ProjectName count={data?.length}>{projectName}</ProjectName>
       <div className="flex items-center gap-x-2">
         <SearchBar table={table} />
         <DropdownMenu>

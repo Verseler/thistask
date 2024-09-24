@@ -38,7 +38,7 @@ export default function Home() {
   const hideTaskEditor = () => setIsTaskEditorVisible(false);
   const showTaskEditor = () => setIsTaskEditorVisible(true);
 
-  const selectedProjectTitle: string =
+  const selectedProjectName: string =
     [...filteredProjects, ...projects].find(
       (project) => project.id === selectedProjectId
     )?.name || filteredProjects[0].name;
@@ -59,7 +59,7 @@ export default function Home() {
         <Header toggleShowMobileSidebar={toggleShowMobileSidebar} />
         <main className="px-3 py-8 md:py-10 md:container md:px-5 lg:px-7">
           <TasksTable
-            projectTitle={selectedProjectTitle}
+            projectName={selectedProjectName}
             tasks={tasks}
             showTaskEditor={showTaskEditor}
             changeSelectedTaskId={changeSelectedTaskId}

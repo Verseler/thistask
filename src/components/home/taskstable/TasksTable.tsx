@@ -28,7 +28,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 type TasksTableProps = {
   tasks: Array<Task>;
-  projectTitle: string;
+  projectName: string;
   showTaskEditor: () => void;
   changeSelectedTaskId: (taskId: string) => void;
   loadingFetchingTask: boolean;
@@ -36,7 +36,7 @@ type TasksTableProps = {
 
 export default function TasksTable({
   tasks,
-  projectTitle,
+  projectName,
   showTaskEditor,
   changeSelectedTaskId,
   loadingFetchingTask,
@@ -128,7 +128,7 @@ export default function TasksTable({
   return (
     <div className="w-full px-4 bg-white border border-gray-200 rounded-lg md:px-6 dark:bg-gray-800 dark:border-gray-700">
       <TopHeader
-        projectTitle={projectTitle}
+        projectName={projectName}
         data={tasks}
         table={table}
         showTaskEditor={showTaskEditor}
