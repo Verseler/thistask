@@ -11,7 +11,7 @@ import ThemeSwitch from "../header/ThemeSwitch";
 import AddProjectInput from "./AddProjectInput";
 import { addProject, deleteProject } from "@/services/api/projects";
 import { toast } from "@/components/ui/use-toast";
-import { useAuth } from "@/context/AuthProvider";
+import { useAuth } from "@/context/AuthProvider/AuthProvider";
 import ConfirmationDialog from "@/components/common/ConfirmationDialog";
 import { useState } from "react";
 

@@ -34,7 +34,7 @@ import { upsertTask } from "@/services/api/tasks";
 import TaskEditorHeader from "./TaskEditorHeader";
 import AddProjectInput from "../sidebar/AddProjectInput";
 import { addProject } from "@/services/api/projects";
-import { useAuth } from "@/context/AuthProvider";
+import { useAuth } from "@/context/AuthProvider/AuthProvider";
 
 type TaskEditorProps = {
   projects: Array<Project>;

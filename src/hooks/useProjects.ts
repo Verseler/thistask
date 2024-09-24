@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { type Project, type FilteredProject } from "@/pages/authenticated/home/home.types";
-import { useAuth } from "@/context/AuthProvider";
+import { useAuth } from "@/context/AuthProvider/AuthProvider";
 import { getProjects } from "@/services/api";
 import { toast } from "@/components/ui/use-toast";
 

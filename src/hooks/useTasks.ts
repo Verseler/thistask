@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 import { type Task, type FilteredProject } from "@/pages/authenticated/home/home.types";
-import { useAuth } from "@/context/AuthProvider";
+import { useAuth } from "@/context/AuthProvider/AuthProvider";
 import { toast } from "@/components/ui/use-toast";
 import { getAllTasks, getProjectTasks } from "@/services/api/tasks";
 
