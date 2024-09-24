@@ -128,6 +128,7 @@ function Register() {
                     placeholder="John"
                     required
                     autoComplete="given-name"
+                    disabled={loading}
                     {...register("first_name", registerOptions.first_name)}
                     className="dark:border-gray-600"
                   />
@@ -139,6 +140,7 @@ function Register() {
                     placeholder="Doe"
                     required
                     autoComplete="family-name"
+                    disabled={loading}
                     {...register("last_name", registerOptions.last_name)}
                     className="dark:border-gray-600"
                   />
@@ -163,6 +165,7 @@ function Register() {
                   placeholder="m@example.com"
                   required
                   autoComplete="email"
+                  disabled={loading}
                   {...register("email", registerOptions.email)}
                   className="dark:border-gray-600"
                 />
@@ -176,6 +179,7 @@ function Register() {
                   id="password"
                   required
                   autoComplete="new-password"
+                  disabled={loading}
                   {...register("password", registerOptions.password)}
                   className="dark:border-gray-600"
                 />
@@ -191,6 +195,7 @@ function Register() {
                   id="confirmPassword"
                   required
                   autoComplete="new-password"
+                  disabled={loading}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="dark:border-gray-600"

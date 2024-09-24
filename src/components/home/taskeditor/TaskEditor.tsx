@@ -206,6 +206,7 @@ export default function TaskEditor({
                     maxLength={50}
                     onChange={onChange}
                     value={value || ""}
+                    disabled={loading}
                   />
                 )}
               />
@@ -226,6 +227,7 @@ export default function TaskEditor({
                     maxLength={250}
                     onChange={onChange}
                     value={value || ""}
+                    disabled={loading}
                   />
                 )}
               />
@@ -257,6 +259,7 @@ export default function TaskEditor({
                           onValueChange={onChange}
                           value={value as string}
                           required
+                          disabled={loading}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select a project" />
@@ -285,6 +288,7 @@ export default function TaskEditor({
                     aria-label="Date and time"
                     type="datetime-local"
                     placeholder="Select date and time"
+                    disabled={loading}
                     {...register("due_date")}
                   />
                 </div>
@@ -296,7 +300,11 @@ export default function TaskEditor({
                     name="priority"
                     render={({ field: { onChange, value } }) => {
                       return (
-                        <Select onValueChange={onChange} value={value || ""}>
+                        <Select
+                          onValueChange={onChange}
+                          value={value || ""}
+                          disabled={loading}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select priority level" />
                           </SelectTrigger>
@@ -327,7 +335,11 @@ export default function TaskEditor({
                     name="status"
                     render={({ field: { onChange, value } }) => {
                       return (
-                        <Select onValueChange={onChange} value={value || ""}>
+                        <Select
+                          onValueChange={onChange}
+                          value={value || ""}
+                          disabled={loading}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select priority level" />
                           </SelectTrigger>

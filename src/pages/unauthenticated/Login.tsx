@@ -105,6 +105,7 @@ export default function Login() {
                   required
                   placeholder="m@example.com"
                   autoComplete="email"
+                  disabled={loading}
                 />
                 {errors.email && (
                   <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -126,6 +127,7 @@ export default function Login() {
                   {...register("password", registerOptions.password)}
                   required
                   autoComplete="current-password"
+                  disabled={loading}
                 />
                 {errors.password && (
                   <p className="text-sm text-red-500">
