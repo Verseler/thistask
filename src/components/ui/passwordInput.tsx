@@ -13,7 +13,12 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
     const [showPassword, setShowPassword] = useState(false);
 
     return (
-      <div className="relative dark:border-gray-600">
+      <div
+        className={cn(
+          "relative dark:border-gray-600",
+          hasError && "border-red-500"
+        )}
+      >
         <Input
           type={showPassword ? "text" : "password"}
           placeholder=" "
