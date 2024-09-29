@@ -27,7 +27,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 import { useEffect, useState } from "react";
-import { Project, Task } from "@/pages/authenticated/home/home.types";
+import type { Task } from "@/pages/authenticated/home/home.types";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "@/components/ui/use-toast";
 import { upsertTask } from "@/services/api/tasks";
@@ -35,27 +35,18 @@ import TaskEditorHeader from "./TaskEditorHeader";
 import AddProjectInput from "../sidebar/AddProjectInput";
 import { addProject } from "@/services/api/projects";
 import { useAuth } from "@/context/AuthProvider/AuthProvider";
+import { useBoundStore } from "@/zustand/useBoundStore";
 
 type TaskEditorProps = {
-  projects: Array<Project>;
   isVisible: boolean;
   close: () => void;
-  selectedTask: Task | null;
-  clearSelectedTaskId: () => void;
   hideTaskEditor: () => void;
-  refetchTasks: () => Promise<void>;
-  refetchProjects: () => Promise<void>;
 };
 
 export default function TaskEditor({
-  projects,
   isVisible,
   close,
-  selectedTask,
-  clearSelectedTaskId,
   hideTaskEditor,
-  refetchTasks,
-  refetchProjects,
 }: TaskEditorProps) {
   const {
     register,
@@ -66,6 +57,11 @@ export default function TaskEditor({
   } = useForm<Task>();
   const [loading, setLoading] = useState<boolean>(false);
   const { user } = useAuth();
+  const projects = useBoundStore((state) => state.projects);
+  const clearSelectedTaskId = useBoundStore(
+    (state) => state.clearSelectedTaskId
+  );
+  const selectedTask = useBoundStore((state) => state.selectedTask);
 
   const onSubmit: SubmitHandler<Task> = async (data): Promise<void> => {
     try {
@@ -88,7 +84,6 @@ export default function TaskEditor({
         });
         return;
       } else {
-        refetchTasks();
         toast({
           title: `Task ${selectedTask?.id ? "updated" : "added"} successfully`,
           duration: 1500,
@@ -151,7 +146,6 @@ export default function TaskEditor({
         description: error.message,
       });
     } else {
-      refetchProjects();
       toast({
         title: "Project added successfully",
         duration: 1500,
@@ -176,11 +170,7 @@ export default function TaskEditor({
     <Modal open={isVisible}>
       <ModalContent>
         <ModalHeader>
-          <TaskEditorHeader
-            close={close}
-            selectedTaskId={selectedTask?.id}
-            refetchTasks={refetchTasks}
-          />
+          <TaskEditorHeader close={close} selectedTaskId={selectedTask?.id} />
         </ModalHeader>
 
         <ModalBody className="h-full md:h-auto">
