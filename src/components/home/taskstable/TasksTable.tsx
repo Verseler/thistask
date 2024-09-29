@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   type ColumnFilter,
@@ -21,33 +21,64 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import columns from "./columns";
-import { type Task } from "@/pages/authenticated/home/home.types";
+import { Project, type Task } from "@/pages/authenticated/home/home.types";
 import TableFooter from "./TableFooter";
 import TopHeader from "./TableHeader";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
+import { getAllTasks } from "@/services/api/tasks";
+import { useAuth } from "@/context/AuthProvider/AuthProvider";
+import { useBoundStore } from "@/zustand/useBoundStore";
+import { filteredProjects } from "@/pages/authenticated/home/Home";
+import { filterTasks, getProjectName } from "./taskstable.helper";
+import { toast } from "@/components/ui/use-toast";
 
 type TasksTableProps = {
-  tasks: Array<Task>;
-  projectTitle: string;
-  showTaskView: () => void;
-  changeSelectedTaskId: (taskId: string) => void;
-  loadingFetchingTask: boolean;
+  showTaskEditor: () => void;
 };
 
-export default function TasksTable({
-  tasks,
-  projectTitle,
-  showTaskView,
-  changeSelectedTaskId,
-  loadingFetchingTask,
-}: TasksTableProps) {
+export default function TasksTable({ showTaskEditor }: TasksTableProps) {
+  const { user } = useAuth();
+  const setTasks = useBoundStore((state) => state.setTasks);
+  const setSelectedTaskId = useBoundStore((state) => state.setSelectedTaskId);
+  const projects = useBoundStore((state) => state.projects);
+  const mergedProjects = [...filteredProjects, ...projects] as Array<Project>;
+  const selectedProjectId = useBoundStore((state) => state.selectedProjectId);
+  const projectName: string =
+    getProjectName(mergedProjects, selectedProjectId) ?? "All";
+  const {
+    data = [],
+    isLoading,
+    error,
+  } = useQuery(getAllTasks(user!.id), {
+    refetchInterval: 700,
+  });
+
+  const tasks = data as Array<Task>;
+  let filteredTasks = useMemo(
+    () => filterTasks(tasks, selectedProjectId),
+    [tasks, selectedProjectId]
+  );
+
+  //set fetched projects to global projects state
+  useEffect(() => {
+    setTasks(filteredTasks);
+  }, [data]);
+
+  if (error) {
+    toast({
+      title: "Error: Unable to get tasks",
+      description: error.message,
+    });
+  }
+
   const [sorting, setSorting] = useState<Array<ColumnSort>>([]);
   const [columnFilters, setColumnFilters] = useState<Array<ColumnFilter>>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
   const table: Table<Task> = useReactTable({
-    data: tasks,
+    data: filteredTasks,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -65,9 +96,9 @@ export default function TasksTable({
     },
   });
 
-  const handleShowTaskView = (taskId: string) => {
-    showTaskView();
-    changeSelectedTaskId(taskId);
+  const handleShowTaskEditor = (taskId: string) => {
+    showTaskEditor();
+    setSelectedTaskId(taskId);
   };
 
   /*
@@ -89,31 +120,33 @@ export default function TasksTable({
     </TableRow>
   ));
 
-  const renderTableBody = table.getRowModel().rows?.length ? (
-    table.getRowModel().rows.map((row) => (
-      <TableRow
-        key={row.id}
-        data-state={row.getIsSelected() && "selected"}
-        onClick={() => handleShowTaskView(row.original.id)}
-        className="h-12 md:h-auto dark:text-gray-300 dark:border-gray-700"
-      >
-        {row.getVisibleCells().map((cell) => (
-          <TableCell key={cell.id}>
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-          </TableCell>
-        ))}
+  const renderTableBody = useMemo(() => {
+    return table.getRowModel().rows?.length ? (
+      table.getRowModel().rows.map((row) => (
+        <TableRow
+          key={row.id}
+          data-state={row.getIsSelected() && "selected"}
+          onClick={() => handleShowTaskEditor(row.original.id)}
+          className="h-12 md:h-auto dark:text-gray-300 dark:border-gray-700"
+        >
+          {row.getVisibleCells().map((cell) => (
+            <TableCell key={cell.id}>
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </TableCell>
+          ))}
+        </TableRow>
+      ))
+    ) : (
+      <TableRow>
+        <TableCell
+          colSpan={columns.length}
+          className="h-8 text-center dark:text-gray-400"
+        >
+          No results.
+        </TableCell>
       </TableRow>
-    ))
-  ) : (
-    <TableRow>
-      <TableCell
-        colSpan={columns.length}
-        className="h-8 text-center dark:text-gray-400"
-      >
-        No results.
-      </TableCell>
-    </TableRow>
-  );
+    );
+  }, [data, selectedProjectId]);
 
   const renderSkeletonPlaceholder = (
     <TableRow>
@@ -128,17 +161,17 @@ export default function TasksTable({
   return (
     <div className="w-full px-4 bg-white border border-gray-200 rounded-lg md:px-6 dark:bg-gray-800 dark:border-gray-700">
       <TopHeader
-        projectTitle={projectTitle}
-        data={tasks}
+        projectName={projectName}
+        data={filteredTasks}
         table={table}
-        showTaskView={showTaskView}
+        showTaskEditor={showTaskEditor}
       />
       <div className="border rounded-md dark:border-gray-700">
         <TableContainer>
           <TableHeader>{renderTableHeader}</TableHeader>
 
           <TableBody>
-            {loadingFetchingTask ? renderSkeletonPlaceholder : renderTableBody}
+            {isLoading ? renderSkeletonPlaceholder : renderTableBody}
           </TableBody>
         </TableContainer>
       </div>

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { MoveLeft } from "lucide-react";
-import { useAuth } from "@/context/AuthProvider";
+import { useAuth } from "@/context/AuthProvider/AuthProvider";
 
 export default function NotFound() {
   const navigation = useNavigate();

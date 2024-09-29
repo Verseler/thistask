@@ -1,4 +1,4 @@
-import { useAuth } from "@/context/AuthProvider";
+import { useAuth } from "@/context/AuthProvider/AuthProvider";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 export default function AuthRoute() {

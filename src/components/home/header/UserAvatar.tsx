@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/AuthProvider";
+import { useAuth } from "@/context/AuthProvider/AuthProvider";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { getFirstNameInitial } from "./header.helper";

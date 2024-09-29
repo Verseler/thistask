@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
 
-import { useAuth } from "@/context/AuthProvider";
+import { useAuth } from "@/context/AuthProvider/AuthProvider";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -95,16 +95,21 @@ export default function Login() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
+            <form
+              noValidate
+              onSubmit={handleSubmit(onSubmit)}
+              className="grid gap-4"
+            >
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   {...register("email", registerOptions.email)}
                   type="email"
-                  required
                   placeholder="m@example.com"
                   autoComplete="email"
+                  disabled={loading}
+                  hasError={!!errors.email}
                 />
                 {errors.email && (
                   <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -126,6 +131,8 @@ export default function Login() {
                   {...register("password", registerOptions.password)}
                   required
                   autoComplete="current-password"
+                  disabled={loading}
+                  hasError={!!errors.password}
                 />
                 {errors.password && (
                   <p className="text-sm text-red-500">

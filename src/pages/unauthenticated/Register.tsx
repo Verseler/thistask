@@ -119,7 +119,11 @@ function Register() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
+            <form
+              noValidate
+              onSubmit={handleSubmit(onSubmit)}
+              className="grid gap-4"
+            >
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="first-name">First name</Label>
@@ -128,6 +132,8 @@ function Register() {
                     placeholder="John"
                     required
                     autoComplete="given-name"
+                    disabled={loading}
+                    hasError={!!errors.first_name}
                     {...register("first_name", registerOptions.first_name)}
                     className="dark:border-gray-600"
                   />
@@ -139,6 +145,8 @@ function Register() {
                     placeholder="Doe"
                     required
                     autoComplete="family-name"
+                    disabled={loading}
+                    hasError={!!errors.last_name}
                     {...register("last_name", registerOptions.last_name)}
                     className="dark:border-gray-600"
                   />
@@ -163,6 +171,8 @@ function Register() {
                   placeholder="m@example.com"
                   required
                   autoComplete="email"
+                  disabled={loading}
+                  hasError={!!errors.email}
                   {...register("email", registerOptions.email)}
                   className="dark:border-gray-600"
                 />
@@ -176,8 +186,10 @@ function Register() {
                   id="password"
                   required
                   autoComplete="new-password"
+                  disabled={loading}
+                  hasError={!!errors.password}
                   {...register("password", registerOptions.password)}
-                  className="dark:border-gray-600"
+                 
                 />
                 {errors.password && (
                   <p className="text-sm text-red-500">
@@ -191,9 +203,10 @@ function Register() {
                   id="confirmPassword"
                   required
                   autoComplete="new-password"
+                  disabled={loading}
                   value={confirmPassword}
+                  hasError={!!errors.password}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="dark:border-gray-600"
                 />
                 {errors.password && (
                   <p className="text-sm text-red-500">

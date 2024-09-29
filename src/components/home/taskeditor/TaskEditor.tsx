@@ -27,36 +27,27 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 import { useEffect, useState } from "react";
-import { Project, Task } from "@/pages/authenticated/home/home.types";
+import type { Task } from "@/pages/authenticated/home/home.types";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "@/components/ui/use-toast";
 import { upsertTask } from "@/services/api/tasks";
-import TaskViewHeader from "./TaskViewHeader";
+import TaskEditorHeader from "./TaskEditorHeader";
 import AddProjectInput from "../sidebar/AddProjectInput";
 import { addProject } from "@/services/api/projects";
-import { useAuth } from "@/context/AuthProvider";
+import { useAuth } from "@/context/AuthProvider/AuthProvider";
+import { useBoundStore } from "@/zustand/useBoundStore";
 
-type TaskViewProps = {
-  projects: Array<Project>;
+type TaskEditorProps = {
   isVisible: boolean;
   close: () => void;
-  selectedTask: Task | null;
-  clearSelectedTaskId: () => void;
-  hideTaskView: () => void;
-  refetchTasks: () => Promise<void>;
-  refetchProjects: () => Promise<void>;
+  hideTaskEditor: () => void;
 };
 
-export default function TaskView({
-  projects,
+export default function TaskEditor({
   isVisible,
   close,
-  selectedTask,
-  clearSelectedTaskId,
-  hideTaskView,
-  refetchTasks,
-  refetchProjects,
-}: TaskViewProps) {
+  hideTaskEditor,
+}: TaskEditorProps) {
   const {
     register,
     handleSubmit,
@@ -66,6 +57,12 @@ export default function TaskView({
   } = useForm<Task>();
   const [loading, setLoading] = useState<boolean>(false);
   const { user } = useAuth();
+  const projects = useBoundStore((state) => state.projects);
+  const clearSelectedTaskId = useBoundStore(
+    (state) => state.clearSelectedTaskId
+  );
+  const selectedProjectId = useBoundStore((state) => state.selectedProjectId);
+  const selectedTask = useBoundStore((state) => state.selectedTask);
 
   const onSubmit: SubmitHandler<Task> = async (data): Promise<void> => {
     try {
@@ -88,7 +85,6 @@ export default function TaskView({
         });
         return;
       } else {
-        refetchTasks();
         toast({
           title: `Task ${selectedTask?.id ? "updated" : "added"} successfully`,
           duration: 1500,
@@ -102,7 +98,7 @@ export default function TaskView({
       });
     } finally {
       setLoading(false);
-      hideTaskView();
+      hideTaskEditor();
     }
   };
 
@@ -151,7 +147,6 @@ export default function TaskView({
         description: error.message,
       });
     } else {
-      refetchProjects();
       toast({
         title: "Project added successfully",
         duration: 1500,
@@ -161,26 +156,22 @@ export default function TaskView({
 
   //handle keyboard escape keyboard key event
   useEffect(() => {
-    const exitTaskView = (event: KeyboardEvent) => {
+    const exitTaskEditor = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         close();
       }
     };
 
-    document.addEventListener("keydown", exitTaskView);
+    document.addEventListener("keydown", exitTaskEditor);
 
-    return () => document.removeEventListener("keydown", exitTaskView);
+    return () => document.removeEventListener("keydown", exitTaskEditor);
   }, []);
 
   return (
     <Modal open={isVisible}>
       <ModalContent>
         <ModalHeader>
-          <TaskViewHeader
-            close={close}
-            selectedTaskId={selectedTask?.id}
-            refetchTasks={refetchTasks}
-          />
+          <TaskEditorHeader close={close} selectedTaskId={selectedTask?.id} />
         </ModalHeader>
 
         <ModalBody className="h-full md:h-auto">
@@ -206,6 +197,8 @@ export default function TaskView({
                     maxLength={50}
                     onChange={onChange}
                     value={value || ""}
+                    disabled={loading}
+                    hasError={!!errors.name}
                   />
                 )}
               />
@@ -226,6 +219,7 @@ export default function TaskView({
                     maxLength={250}
                     onChange={onChange}
                     value={value || ""}
+                    disabled={loading}
                   />
                 )}
               />
@@ -239,7 +233,13 @@ export default function TaskView({
                     control={control}
                     name="project_id"
                     rules={{ required: true }}
-                    defaultValue={projects[0]?.id}
+                    defaultValue={
+                      ["all", "completed", "today", "tomorrow"].includes(
+                        selectedProjectId
+                      )
+                        ? projects[0]?.id
+                        : selectedProjectId
+                    }
                     render={({ field: { onChange, value } }) => {
                       const renderProjectSelectItems = projects.map(
                         (project) => (
@@ -257,6 +257,7 @@ export default function TaskView({
                           onValueChange={onChange}
                           value={value as string}
                           required
+                          disabled={loading}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select a project" />
@@ -285,6 +286,7 @@ export default function TaskView({
                     aria-label="Date and time"
                     type="datetime-local"
                     placeholder="Select date and time"
+                    disabled={loading}
                     {...register("due_date")}
                   />
                 </div>
@@ -296,7 +298,11 @@ export default function TaskView({
                     name="priority"
                     render={({ field: { onChange, value } }) => {
                       return (
-                        <Select onValueChange={onChange} value={value || ""}>
+                        <Select
+                          onValueChange={onChange}
+                          value={value || ""}
+                          disabled={loading}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select priority level" />
                           </SelectTrigger>
@@ -327,7 +333,11 @@ export default function TaskView({
                     name="status"
                     render={({ field: { onChange, value } }) => {
                       return (
-                        <Select onValueChange={onChange} value={value || ""}>
+                        <Select
+                          onValueChange={onChange}
+                          value={value || ""}
+                          disabled={loading}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select priority level" />
                           </SelectTrigger>

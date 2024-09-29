@@ -4,84 +4,46 @@ import {
   CalendarArrowUp,
   CircleCheck,
 } from "lucide-react";
-import Sidebar from "@/components/home/sidebar";
-import Header from "@/components/home/header";
+import Sidebar from "@/components/home/sidebar/Sidebar.tsx";
+import Header from "@/components/home/header/Header";
 import { type FilteredProject } from "./home.types";
-import useProjects from "@/hooks/useProjects";
-import useTasks from "@/hooks/useTasks";
-import TasksTable from "@/components/home/taskstable";
+import TasksTable from "@/components/home/taskstable/TasksTable";
 import { useState } from "react";
-import TaskView from "@/components/home/taskview";
+import TaskEditor from "@/components/home/taskeditor/TaskEditor";
 
 export default function Home() {
-  const {
-    projects,
-    changeSelectedProjectId,
-    selectedProjectId,
-    refetchProjects,
-  } = useProjects(filteredProjects);
-  const {
-    tasks,
-    refetchTasks,
-    loadingFetchingTask,
-    changeSelectedTaskId,
-    selectedTask,
-    clearSelectedTaskId,
-  } = useTasks(filteredProjects, selectedProjectId);
-  const [showMobileSidebar, setShowMobileSidebar] = useState<boolean>(false);
-  const [isTaskViewVisible, setIsTaskViewVisible] = useState<boolean>(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [isTaskEditorVisible, setIsTaskEditorVisible] = useState(false);
 
   const toggleShowMobileSidebar = () =>
     setShowMobileSidebar(!showMobileSidebar);
 
-  const hideTaskView = () => setIsTaskViewVisible(false);
-  const showTaskView = () => setIsTaskViewVisible(true);
-
-  const selectedProjectTitle: string =
-    [...filteredProjects, ...projects].find(
-      (project) => project.id === selectedProjectId
-    )?.name || filteredProjects[0].name;
+  const hideTaskEditor = () => setIsTaskEditorVisible(false);
+  const showTaskEditor = () => setIsTaskEditorVisible(true);
 
   return (
     <div className="flex h-[100svh] dark:bg-gray-900">
       <Sidebar
-        selectedProjectId={selectedProjectId}
-        filteredProjects={filteredProjects}
-        projects={projects}
-        refetchProjects={refetchProjects}
-        changeSelectedProjectId={changeSelectedProjectId}
         showMobileSidebar={showMobileSidebar}
         toggleShowMobileSidebar={toggleShowMobileSidebar}
       />
-
       <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900">
         <Header toggleShowMobileSidebar={toggleShowMobileSidebar} />
         <main className="px-3 py-8 md:py-10 md:container md:px-5 lg:px-7">
-          <TasksTable
-            projectTitle={selectedProjectTitle}
-            tasks={tasks}
-            showTaskView={showTaskView}
-            changeSelectedTaskId={changeSelectedTaskId}
-            loadingFetchingTask={loadingFetchingTask}
-          />
+          <TasksTable showTaskEditor={showTaskEditor} />
         </main>
       </div>
 
-      <TaskView
-        isVisible={isTaskViewVisible}
-        close={hideTaskView}
-        selectedTask={selectedTask}
-        clearSelectedTaskId={clearSelectedTaskId}
-        projects={projects}
-        hideTaskView={hideTaskView}
-        refetchTasks={refetchTasks}
-        refetchProjects={refetchProjects}
+      <TaskEditor
+        isVisible={isTaskEditorVisible}
+        close={hideTaskEditor}
+        hideTaskEditor={hideTaskEditor}
       />
     </div>
   );
 }
 
-const filteredProjects: Array<FilteredProject> = [
+export const filteredProjects: Array<FilteredProject> = [
   {
     id: "all",
     name: "All",
