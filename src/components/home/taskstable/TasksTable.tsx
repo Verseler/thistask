@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   type ColumnFilter,
@@ -21,26 +21,58 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import columns from "./columns";
-import { type Task } from "@/pages/authenticated/home/home.types";
+import { Project, type Task } from "@/pages/authenticated/home/home.types";
 import TableFooter from "./TableFooter";
 import TopHeader from "./TableHeader";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
+import { getAllTasks } from "@/services/api/tasks";
+import { useAuth } from "@/context/AuthProvider/AuthProvider";
+import { useBoundStore } from "@/zustand/useBoundStore";
+import { filteredProjects } from "@/pages/authenticated/home/Home";
+import { getProjectName } from "./taskstable.helper";
+import { toast } from "@/components/ui/use-toast";
 
 type TasksTableProps = {
-  tasks: Array<Task>;
-  projectName: string;
   showTaskEditor: () => void;
-  changeSelectedTaskId: (taskId: string) => void;
-  loadingFetchingTask: boolean;
 };
 
-export default function TasksTable({
-  tasks,
-  projectName,
-  showTaskEditor,
-  changeSelectedTaskId,
-  loadingFetchingTask,
-}: TasksTableProps) {
+export default function TasksTable({ showTaskEditor }: TasksTableProps) {
+  const { user } = useAuth();
+  const setTasks = useBoundStore((state) => state.setTasks);
+  const {
+    data = [],
+    isLoading,
+    error,
+  } = useQuery(getAllTasks(user!.id), {
+    refetchInterval: 1000,
+  });
+  const tasks = data as Array<Task>;
+
+  //set fetched projects to global projects state
+  useEffect(() => {
+    setTasks(tasks);
+  }, [data]);
+
+  if (error) {
+    toast({
+      title: "Error: Unable to get tasks",
+      description: error.message,
+    });
+  }
+
+  const setSelectedTaskId = useBoundStore((state) => state.setSelectedTaskId);
+  const projects = useBoundStore((state) => state.projects);
+  const mergedProjects = [...filteredProjects, ...projects] as Array<Project>;
+  const selectedProjectId = useBoundStore((state) => state.selectedProjectId);
+
+  const projectName: string =
+    getProjectName(mergedProjects, selectedProjectId) ?? "All";
+
+  [...filteredProjects, ...projects].find(
+    (project) => project.id === selectedProjectId
+  )?.name || filteredProjects[0].name;
+
   const [sorting, setSorting] = useState<Array<ColumnSort>>([]);
   const [columnFilters, setColumnFilters] = useState<Array<ColumnFilter>>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -67,7 +99,7 @@ export default function TasksTable({
 
   const handleShowTaskEditor = (taskId: string) => {
     showTaskEditor();
-    changeSelectedTaskId(taskId);
+    setSelectedTaskId(taskId);
   };
 
   /*
@@ -138,7 +170,7 @@ export default function TasksTable({
           <TableHeader>{renderTableHeader}</TableHeader>
 
           <TableBody>
-            {loadingFetchingTask ? renderSkeletonPlaceholder : renderTableBody}
+            {isLoading ? renderSkeletonPlaceholder : renderTableBody}
           </TableBody>
         </TableContainer>
       </div>
