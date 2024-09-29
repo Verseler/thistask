@@ -61,6 +61,7 @@ export default function TaskEditor({
   const clearSelectedTaskId = useBoundStore(
     (state) => state.clearSelectedTaskId
   );
+  const selectedProjectId = useBoundStore((state) => state.selectedProjectId);
   const selectedTask = useBoundStore((state) => state.selectedTask);
 
   const onSubmit: SubmitHandler<Task> = async (data): Promise<void> => {
@@ -232,7 +233,13 @@ export default function TaskEditor({
                     control={control}
                     name="project_id"
                     rules={{ required: true }}
-                    defaultValue={projects[0]?.id}
+                    defaultValue={
+                      ["all", "completed", "today", "tomorrow"].includes(
+                        selectedProjectId
+                      )
+                        ? projects[0]?.id
+                        : selectedProjectId
+                    }
                     render={({ field: { onChange, value } }) => {
                       const renderProjectSelectItems = projects.map(
                         (project) => (
