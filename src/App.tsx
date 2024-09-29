@@ -1,11 +1,11 @@
 import { Routes, Route } from "react-router-dom";
 
-import { Toaster } from "./components/ui/toaster";
+import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/NotFound";
 import Login from "@/pages/unauthenticated/Login";
 import Register from "@/pages/unauthenticated/Register";
 import AuthRoute from "@/components/auth/AuthRoute";
-import Home from "./pages/authenticated/home/Home";
+import Home from "@/pages/authenticated/home/Home";
 
 const App = () => {
   return (
