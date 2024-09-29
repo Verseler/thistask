@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { MoveLeft } from "lucide-react";
+import { useAuth } from "@/context/AuthProvider";
 
 export default function NotFound() {
   const navigation = useNavigate();
+  const { user } = useAuth();
 
   return (
     <section className="bg-white dark:bg-gray-900 ">
@@ -21,7 +23,7 @@ export default function NotFound() {
 
           <div className="flex items-center mt-6 gap-x-3">
             <Button
-              className="space-x-2.5"
+              className="space-x-2.5 dark:bg-gray-900 dark:text-white dark:border-gray-600"
               variant="outline"
               onClick={() => navigation(-1)}
             >
@@ -29,7 +31,9 @@ export default function NotFound() {
               <span className="font-normal">Go Back</span>
             </Button>
 
-            <Button onClick={() => navigation("/")}>Take me home</Button>
+            {user && (
+              <Button onClick={() => navigation("/")}>Take me home</Button>
+            )}
           </div>
         </div>
       </div>

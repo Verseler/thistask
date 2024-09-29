@@ -149,15 +149,13 @@ export default function TasksTable({ showTaskEditor }: TasksTableProps) {
   }, [data, selectedProjectId]);
 
   const renderSkeletonPlaceholder = (
-    <>
-      <TableRow>
-        {columns.map((column, index) => (
-          <TableCell key={column.id + " " + index}>
-            <Skeleton className="w-full h-4" />
-          </TableCell>
-        ))}
-      </TableRow>
-    </>
+    <TableRow>
+      {columns.map((column, index) => (
+        <TableCell key={column.id + " " + index}>
+          <Skeleton className="w-full h-4 my-0.5" />
+        </TableCell>
+      ))}
+    </TableRow>
   );
 
   return (

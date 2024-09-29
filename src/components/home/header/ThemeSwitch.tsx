@@ -1,31 +1,22 @@
 import { Sun, Moon } from "lucide-react";
-import { useLocalStorage } from "usehooks-ts";
-import { HTMLProps, useEffect } from "react";
+import { HTMLProps } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { type ColorScheme } from "@/lib/types";
+import useTheme from "@/hooks/useTheme";
 
 type ThemeSwitchProps = {
   className?: HTMLProps<HTMLElement>["className"];
 };
 
 const ThemeSwitch = ({ className }: ThemeSwitchProps) => {
-  const [theme, setTheme] = useLocalStorage<ColorScheme>("theme", "light");
-  useEffect(() => {
-    document.body.classList.remove("light", "dark");
-    document.body.classList.add(theme);
-  }, [theme]);
-
-  const handleThemeChange = (currentTheme: ColorScheme): void => {
-    setTheme(currentTheme == "dark" ? "light" : "dark");
-  };
+  const { theme, handleChangeTheme } = useTheme();
 
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={() => handleThemeChange(theme)}
+      onClick={() => handleChangeTheme(theme)}
       className={cn("text-black", className)}
     >
       {theme === "light" ? (
