@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   type ColumnFilter,
@@ -30,7 +30,7 @@ import { getAllTasks } from "@/services/api/tasks";
 import { useAuth } from "@/context/AuthProvider/AuthProvider";
 import { useBoundStore } from "@/zustand/useBoundStore";
 import { filteredProjects } from "@/pages/authenticated/home/Home";
-import { getProjectName } from "./taskstable.helper";
+import { filterTasks, getProjectName } from "./taskstable.helper";
 import { toast } from "@/components/ui/use-toast";
 
 type TasksTableProps = {
@@ -40,6 +40,12 @@ type TasksTableProps = {
 export default function TasksTable({ showTaskEditor }: TasksTableProps) {
   const { user } = useAuth();
   const setTasks = useBoundStore((state) => state.setTasks);
+  const setSelectedTaskId = useBoundStore((state) => state.setSelectedTaskId);
+  const projects = useBoundStore((state) => state.projects);
+  const mergedProjects = [...filteredProjects, ...projects] as Array<Project>;
+  const selectedProjectId = useBoundStore((state) => state.selectedProjectId);
+  const projectName: string =
+    getProjectName(mergedProjects, selectedProjectId) ?? "All";
   const {
     data = [],
     isLoading,
@@ -48,10 +54,14 @@ export default function TasksTable({ showTaskEditor }: TasksTableProps) {
     refetchInterval: 1000,
   });
   const tasks = data as Array<Task>;
+  let filteredTasks = useMemo(
+    () => filterTasks(tasks, selectedProjectId),
+    [tasks, selectedProjectId]
+  );
 
   //set fetched projects to global projects state
   useEffect(() => {
-    setTasks(tasks);
+    setTasks(filteredTasks);
   }, [data]);
 
   if (error) {
@@ -61,25 +71,13 @@ export default function TasksTable({ showTaskEditor }: TasksTableProps) {
     });
   }
 
-  const setSelectedTaskId = useBoundStore((state) => state.setSelectedTaskId);
-  const projects = useBoundStore((state) => state.projects);
-  const mergedProjects = [...filteredProjects, ...projects] as Array<Project>;
-  const selectedProjectId = useBoundStore((state) => state.selectedProjectId);
-
-  const projectName: string =
-    getProjectName(mergedProjects, selectedProjectId) ?? "All";
-
-  [...filteredProjects, ...projects].find(
-    (project) => project.id === selectedProjectId
-  )?.name || filteredProjects[0].name;
-
   const [sorting, setSorting] = useState<Array<ColumnSort>>([]);
   const [columnFilters, setColumnFilters] = useState<Array<ColumnFilter>>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
   const table: Table<Task> = useReactTable({
-    data: tasks,
+    data: filteredTasks,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -148,20 +146,22 @@ export default function TasksTable({ showTaskEditor }: TasksTableProps) {
   );
 
   const renderSkeletonPlaceholder = (
-    <TableRow>
-      {columns.map((column, index) => (
-        <TableCell key={column.id + " " + index}>
-          <Skeleton className="w-full h-4" />
-        </TableCell>
-      ))}
-    </TableRow>
+    <>
+      <TableRow>
+        {columns.map((column, index) => (
+          <TableCell key={column.id + " " + index}>
+            <Skeleton className="w-full h-4" />
+          </TableCell>
+        ))}
+      </TableRow>
+    </>
   );
 
   return (
     <div className="w-full px-4 bg-white border border-gray-200 rounded-lg md:px-6 dark:bg-gray-800 dark:border-gray-700">
       <TopHeader
         projectName={projectName}
-        data={tasks}
+        data={filteredTasks}
         table={table}
         showTaskEditor={showTaskEditor}
       />
