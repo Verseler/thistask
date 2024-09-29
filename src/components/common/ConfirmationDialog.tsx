@@ -44,7 +44,7 @@ const ConfirmationDialog = ({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="dark:text-gray-200">
+          <AlertDialogCancel className="dark:text-gray-200 dark:bg-gray-700">
             {cancelLabel}
           </AlertDialogCancel>
           <AlertDialogAction
