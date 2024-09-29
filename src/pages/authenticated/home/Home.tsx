@@ -4,7 +4,7 @@ import {
   CalendarArrowUp,
   CircleCheck,
 } from "lucide-react";
-import Sidebar from "@/components/home/sidebar/Sidebar";
+import Sidebar from "@/components/home/sidebar/Sidebar.tsx";
 import Header from "@/components/home/header/Header";
 import { type FilteredProject } from "./home.types";
 import TasksTable from "@/components/home/taskstable/TasksTable";
