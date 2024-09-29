@@ -8,6 +8,8 @@ import AuthRoute from "@/components/auth/AuthRoute";
 import Home from "@/pages/authenticated/home/Home";
 
 const App = () => {
+  const {} = useTheme(); //initialize theme
+
   return (
     <div className="bg-white dark:bg-gray-900">
       <Routes>
