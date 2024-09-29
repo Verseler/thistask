@@ -51,8 +51,9 @@ export default function TasksTable({ showTaskEditor }: TasksTableProps) {
     isLoading,
     error,
   } = useQuery(getAllTasks(user!.id), {
-    refetchInterval: 1000,
+    refetchInterval: 700,
   });
+
   const tasks = data as Array<Task>;
   let filteredTasks = useMemo(
     () => filterTasks(tasks, selectedProjectId),
@@ -119,31 +120,33 @@ export default function TasksTable({ showTaskEditor }: TasksTableProps) {
     </TableRow>
   ));
 
-  const renderTableBody = table.getRowModel().rows?.length ? (
-    table.getRowModel().rows.map((row) => (
-      <TableRow
-        key={row.id}
-        data-state={row.getIsSelected() && "selected"}
-        onClick={() => handleShowTaskEditor(row.original.id)}
-        className="h-12 md:h-auto dark:text-gray-300 dark:border-gray-700"
-      >
-        {row.getVisibleCells().map((cell) => (
-          <TableCell key={cell.id}>
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-          </TableCell>
-        ))}
+  const renderTableBody = useMemo(() => {
+    return table.getRowModel().rows?.length ? (
+      table.getRowModel().rows.map((row) => (
+        <TableRow
+          key={row.id}
+          data-state={row.getIsSelected() && "selected"}
+          onClick={() => handleShowTaskEditor(row.original.id)}
+          className="h-12 md:h-auto dark:text-gray-300 dark:border-gray-700"
+        >
+          {row.getVisibleCells().map((cell) => (
+            <TableCell key={cell.id}>
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </TableCell>
+          ))}
+        </TableRow>
+      ))
+    ) : (
+      <TableRow>
+        <TableCell
+          colSpan={columns.length}
+          className="h-8 text-center dark:text-gray-400"
+        >
+          No results.
+        </TableCell>
       </TableRow>
-    ))
-  ) : (
-    <TableRow>
-      <TableCell
-        colSpan={columns.length}
-        className="h-8 text-center dark:text-gray-400"
-      >
-        No results.
-      </TableCell>
-    </TableRow>
-  );
+    );
+  }, [data, selectedProjectId]);
 
   const renderSkeletonPlaceholder = (
     <>

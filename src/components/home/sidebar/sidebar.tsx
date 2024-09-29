@@ -12,7 +12,7 @@ import { addProject, deleteProject } from "@/services/api/projects";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from "@/context/AuthProvider/AuthProvider";
 import ConfirmationDialog from "@/components/common/ConfirmationDialog";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
 import { getProjects } from "@/services/api";
 import { filteredProjects } from "@/pages/authenticated/home/Home";
@@ -31,7 +31,7 @@ export default function Sidebar({
   const { user } = useAuth();
   //! i use ! operator to assert the user is not null or undefined
   const { data = [] } = useQuery(getProjects(user!.id), {
-    refetchInterval: 1000,
+    refetchInterval: 700,
   });
   const projects = data as Array<Project>;
 
@@ -105,16 +105,20 @@ export default function Sidebar({
    *  UI
    *
    */
-  const RenderFilteredProjects = filteredProjects?.map((project, index) => (
-    <NavItems
-      key={index}
-      name={project?.name}
-      isActive={selectedProjectId === project?.id}
-      showDelete={false}
-      onClick={() => setSelectedProjectId(project?.id)}
-      icon={project?.icon}
-    />
-  ));
+  const RenderFilteredProjects = useMemo(
+    () =>
+      filteredProjects?.map((project, index) => (
+        <NavItems
+          key={index}
+          name={project?.name}
+          isActive={selectedProjectId === project?.id}
+          showDelete={false}
+          onClick={() => setSelectedProjectId(project?.id)}
+          icon={project?.icon}
+        />
+      )),
+    [projects]
+  );
 
   const ProjectSectionLabel = projects && projects?.length > 0 && (
     <h2 className="relative text-lg font-semibold tracking-tight dark:text-white">
