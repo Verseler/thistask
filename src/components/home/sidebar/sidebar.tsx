@@ -3,7 +3,6 @@ import { X, Hash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import NavItems from "./NavItems";
 import { cn } from "@/lib/utils";
-import { FilteredProject } from "@/pages/authenticated/home/home.types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AppLogo from "@/components/common/AppLogo";
 import UserAvatar from "../header/UserAvatar";
@@ -13,29 +12,40 @@ import { addProject, deleteProject } from "@/services/api/projects";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from "@/context/AuthProvider/AuthProvider";
 import ConfirmationDialog from "@/components/common/ConfirmationDialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
+import { getProjects } from "@/services/api";
+import { filteredProjects } from "@/pages/authenticated/home/Home";
+import { useBoundStore } from "@/zustand/useBoundStore";
+import { Project } from "@/pages/authenticated/home/home.types";
 
 type SidebarProps = {
-  selectedProjectId: string;
-  projects: Array<any>;
-  refetchProjects: () => Promise<void>;
-  filteredProjects: Array<FilteredProject>;
-  changeSelectedProjectId: (id: string) => void;
   showMobileSidebar: boolean;
   toggleShowMobileSidebar: () => void;
 };
 
 export default function Sidebar({
-  selectedProjectId,
-  filteredProjects,
-  projects,
-  refetchProjects,
-  changeSelectedProjectId,
   showMobileSidebar,
   toggleShowMobileSidebar,
 }: SidebarProps) {
   const { user } = useAuth();
+  //! i use ! operator to assert the user is not null or undefined
+  const { data = [] } = useQuery(getProjects(user!.id), {
+    refetchInterval: 1000,
+  });
+  const projects = data as Array<Project>;
+
+  const setProjects = useBoundStore((state) => state.setProjects);
+  const selectedProjectId = useBoundStore((state) => state.selectedProjectId);
+  const setSelectedProjectId = useBoundStore(
+    (state) => state.setSelectedProjectId
+  );
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
+  //set fetched projects to global projects state
+  useEffect(() => {
+    setProjects(projects);
+  }, [data]);
 
   const showDeleteDialog = () => setIsDialogOpen(true);
   const hideDeleteDialog = () => setIsDialogOpen(false);
@@ -57,7 +67,6 @@ export default function Sidebar({
         description: error.message,
       });
     } else {
-      refetchProjects();
       toast({
         title: "Project added successfully",
         duration: 1500,
@@ -82,8 +91,7 @@ export default function Sidebar({
         description: error.message,
       });
     } else {
-      changeSelectedProjectId(filteredProjects[0].id);
-      refetchProjects();
+      setSelectedProjectId(filteredProjects[0].id);
       hideDeleteDialog();
       toast({
         title: "Project deleted successfully",
@@ -97,36 +105,36 @@ export default function Sidebar({
    *  UI
    *
    */
-  const RenderFilteredProjects = filteredProjects?.map((project, index) => {
-    return (
-      <NavItems
-        key={index}
-        name={project?.name}
-        isActive={selectedProjectId == project?.id}
-        showDelete={false}
-        onClick={() => changeSelectedProjectId(project?.id)}
-        icon={project?.icon}
-      />
-    );
-  });
+  const RenderFilteredProjects = filteredProjects?.map((project, index) => (
+    <NavItems
+      key={index}
+      name={project?.name}
+      isActive={selectedProjectId === project?.id}
+      showDelete={false}
+      onClick={() => setSelectedProjectId(project?.id)}
+      icon={project?.icon}
+    />
+  ));
 
-  const ProjectSectionLabel = projects?.length > 0 && (
+  const ProjectSectionLabel = projects && projects?.length > 0 && (
     <h2 className="relative text-lg font-semibold tracking-tight dark:text-white">
       {projects?.length == 1 ? "Project" : "Projects"}
     </h2>
   );
 
-  const RenderProjects = projects?.map((project, index) => (
-    <NavItems
-      key={index}
-      name={project?.name}
-      isActive={selectedProjectId === project?.id}
-      onClick={() => changeSelectedProjectId(project?.id)}
-      onClickDeletion={showDeleteDialog}
-      showDelete={selectedProjectId === project?.id}
-      icon={<Hash className="mr-2 md:size-4" />}
-    />
-  ));
+  const RenderProjects =
+    projects &&
+    projects?.map((project, index) => (
+      <NavItems
+        key={index}
+        name={project?.name || "Untitled"}
+        isActive={selectedProjectId === project?.id}
+        onClick={() => setSelectedProjectId(project?.id)}
+        onClickDeletion={showDeleteDialog}
+        showDelete={selectedProjectId === project?.id}
+        icon={<Hash className="mr-2 md:size-4" />}
+      />
+    ));
 
   const sidebarStyle = showMobileSidebar ? "block" : "hidden md:block";
 
