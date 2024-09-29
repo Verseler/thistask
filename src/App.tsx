@@ -6,6 +6,7 @@ import Login from "@/pages/unauthenticated/Login";
 import Register from "@/pages/unauthenticated/Register";
 import AuthRoute from "@/components/auth/AuthRoute";
 import Home from "@/pages/authenticated/home/Home";
+import useTheme from "./hooks/useTheme";
 
 const App = () => {
   const {} = useTheme(); //initialize theme
