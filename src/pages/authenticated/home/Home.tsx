@@ -6,12 +6,23 @@ import {
 } from "lucide-react";
 import Sidebar from "@/components/home/sidebar/Sidebar.tsx";
 import Header from "@/components/home/header/Header";
-import { type FilteredProject } from "./home.types";
+import { Task, type FilteredProject } from "./home.types";
 import TasksTable from "@/components/home/taskstable/TasksTable";
 import { useState } from "react";
 import TaskEditor from "@/components/home/taskeditor/TaskEditor";
+import { useAuth } from "@/context/AuthProvider/AuthProvider";
+import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
+import { getAllTasks } from "@/services/api/tasks";
 
 export default function Home() {
+  const { user } = useAuth();
+  const {
+    data = [],
+    isLoading,
+    error,
+    refetch: refetchTasks,
+  } = useQuery(getAllTasks(user!.id));
+  const tasks = data as Array<Task>;
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [isTaskEditorVisible, setIsTaskEditorVisible] = useState(false);
 
@@ -30,7 +41,12 @@ export default function Home() {
       <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900">
         <Header toggleShowMobileSidebar={toggleShowMobileSidebar} />
         <main className="px-3 py-8 md:py-10 md:container md:px-5 lg:px-7">
-          <TasksTable showTaskEditor={showTaskEditor} />
+          <TasksTable
+            showTaskEditor={showTaskEditor}
+            tasks={tasks}
+            isTasksLoading={isLoading}
+            tasksError={error}
+          />
         </main>
       </div>
 
@@ -38,6 +54,7 @@ export default function Home() {
         isVisible={isTaskEditorVisible}
         close={hideTaskEditor}
         hideTaskEditor={hideTaskEditor}
+        refetchTasks={refetchTasks}
       />
     </div>
   );

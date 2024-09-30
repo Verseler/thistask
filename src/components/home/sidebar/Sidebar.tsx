@@ -30,11 +30,11 @@ export default function Sidebar({
 }: SidebarProps) {
   const { user } = useAuth();
   //! i use ! operator to assert the user is not null or undefined
-  const { data = [] } = useQuery(getProjects(user!.id), {
-    refetchInterval: 700,
-  });
+  const { data = [], refetch: refetchProjects } = useQuery(
+    getProjects(user!.id)
+  );
   const projects = data as Array<Project>;
-
+  
   const setProjects = useBoundStore((state) => state.setProjects);
   const selectedProjectId = useBoundStore((state) => state.selectedProjectId);
   const setSelectedProjectId = useBoundStore(
@@ -67,6 +67,7 @@ export default function Sidebar({
         description: error.message,
       });
     } else {
+      refetchProjects();
       toast({
         title: "Project added successfully",
         duration: 1500,
@@ -91,6 +92,7 @@ export default function Sidebar({
         description: error.message,
       });
     } else {
+      refetchProjects();
       setSelectedProjectId(filteredProjects[0].id);
       hideDeleteDialog();
       toast({

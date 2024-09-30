@@ -17,11 +17,13 @@ import ConfirmationDialog from "@/components/common/ConfirmationDialog";
 type TaskEditorHeaderProps = {
   close: () => void;
   selectedTaskId: string | undefined;
+  refetchTasks: () => void;
 };
 
 function TaskEditorHeader({
   close,
   selectedTaskId,
+  refetchTasks,
 }: TaskEditorHeaderProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
@@ -47,6 +49,7 @@ function TaskEditorHeader({
         });
         return;
       } else {
+        refetchTasks();
         toast({
           title: "Task deleted successfully",
           duration: 1500,
