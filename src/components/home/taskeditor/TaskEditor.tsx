@@ -41,12 +41,14 @@ type TaskEditorProps = {
   isVisible: boolean;
   close: () => void;
   hideTaskEditor: () => void;
+  refetchTasks: () => void;
 };
 
 export default function TaskEditor({
   isVisible,
   close,
   hideTaskEditor,
+  refetchTasks,
 }: TaskEditorProps) {
   const {
     register,
@@ -85,6 +87,7 @@ export default function TaskEditor({
         });
         return;
       } else {
+        refetchTasks();
         toast({
           title: `Task ${selectedTask?.id ? "updated" : "added"} successfully`,
           duration: 1500,
@@ -147,6 +150,7 @@ export default function TaskEditor({
         description: error.message,
       });
     } else {
+      refetchTasks();
       toast({
         title: "Project added successfully",
         duration: 1500,
@@ -171,7 +175,11 @@ export default function TaskEditor({
     <Modal open={isVisible}>
       <ModalContent>
         <ModalHeader>
-          <TaskEditorHeader close={close} selectedTaskId={selectedTask?.id} />
+          <TaskEditorHeader
+            close={close}
+            selectedTaskId={selectedTask?.id}
+            refetchTasks={refetchTasks}
+          />
         </ModalHeader>
 
         <ModalBody className="h-full md:h-auto">
