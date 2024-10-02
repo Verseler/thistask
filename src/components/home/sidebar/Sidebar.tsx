@@ -34,7 +34,7 @@ export default function Sidebar({
     getProjects(user!.id)
   );
   const projects = data as Array<Project>;
-  
+
   const setProjects = useBoundStore((state) => state.setProjects);
   const selectedProjectId = useBoundStore((state) => state.selectedProjectId);
   const setSelectedProjectId = useBoundStore(
@@ -119,28 +119,30 @@ export default function Sidebar({
           icon={project?.icon}
         />
       )),
-    [projects]
+    [projects, selectedProjectId]
   );
 
-  const ProjectSectionLabel = projects && projects?.length > 0 && (
+  const ProjectSectionLabel = projects?.length > 0 && (
     <h2 className="relative text-lg font-semibold tracking-tight dark:text-white">
       {projects?.length == 1 ? "Project" : "Projects"}
     </h2>
   );
 
-  const RenderProjects =
-    projects &&
-    projects?.map((project, index) => (
-      <NavItems
-        key={index}
-        name={project?.name || "Untitled"}
-        isActive={selectedProjectId === project?.id}
-        onClick={() => setSelectedProjectId(project?.id)}
-        onClickDeletion={showDeleteDialog}
-        showDelete={selectedProjectId === project?.id}
-        icon={<Hash className="mr-2 md:size-4" />}
-      />
-    ));
+  const RenderProjects = useMemo(
+    () =>
+      projects?.map((project, index) => (
+        <NavItems
+          key={index}
+          name={project?.name || "Untitled"}
+          isActive={selectedProjectId === project?.id}
+          onClick={() => setSelectedProjectId(project?.id)}
+          onClickDeletion={showDeleteDialog}
+          showDelete={selectedProjectId === project?.id}
+          icon={<Hash className="mr-2 md:size-4" />}
+        />
+      )),
+    [projects, selectedProjectId]
+  );
 
   const sidebarStyle = showMobileSidebar ? "block" : "hidden md:block";
 
