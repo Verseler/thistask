@@ -234,7 +234,7 @@ export default function TaskEditor({
             </div>
 
             <div className="flex flex-col w-full p-4 md:w-72">
-              <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-1">
                 <div>
                   <Label htmlFor="project">Project</Label>
                   <Controller
@@ -370,7 +370,7 @@ export default function TaskEditor({
                 </div>
               </div>
 
-              <div className="flex items-end justify-end flex-1 mt-10 md:mt-7">
+              <div className="flex items-end justify-end flex-1 mt-7">
                 <Button
                   type="submit"
                   className="gap-1.5 w-full md:w-auto text-base md:text-sm"
