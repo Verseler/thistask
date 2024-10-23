@@ -19,15 +19,7 @@ import { filteredProjects } from "@/pages/authenticated/home/Home";
 import { useBoundStore } from "@/zustand/useBoundStore";
 import { Project } from "@/pages/authenticated/home/home.types";
 
-type SidebarProps = {
-  showMobileSidebar: boolean;
-  toggleShowMobileSidebar: () => void;
-};
-
-export default function Sidebar({
-  showMobileSidebar,
-  toggleShowMobileSidebar,
-}: SidebarProps) {
+export default function Sidebar() {
   const { user } = useAuth();
   //! i use ! operator to assert the user is not null or undefined
   const { data = [], refetch: refetchProjects } = useQuery(
@@ -41,6 +33,12 @@ export default function Sidebar({
     (state) => state.setSelectedProjectId
   );
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const showMobileSidebar = useBoundStore(
+    (state) => state.sidebarIsOpenInMobile
+  );
+  const toggleShowMobileSidebar = useBoundStore(
+    (state) => state.toggleShowMobileSidebar
+  );
 
   //set fetched projects to global projects state
   useEffect(() => {

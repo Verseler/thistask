@@ -23,23 +23,16 @@ export default function Home() {
     refetch: refetchTasks,
   } = useQuery(getAllTasks(user!.id));
   const tasks = data as Array<Task>;
-  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [isTaskEditorVisible, setIsTaskEditorVisible] = useState(false);
-
-  const toggleShowMobileSidebar = () =>
-    setShowMobileSidebar(!showMobileSidebar);
 
   const hideTaskEditor = () => setIsTaskEditorVisible(false);
   const showTaskEditor = () => setIsTaskEditorVisible(true);
 
   return (
     <div className="flex h-[100svh] dark:bg-gray-900">
-      <Sidebar
-        showMobileSidebar={showMobileSidebar}
-        toggleShowMobileSidebar={toggleShowMobileSidebar}
-      />
+      <Sidebar />
       <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900">
-        <Header toggleShowMobileSidebar={toggleShowMobileSidebar} />
+        <Header />
         <main className="px-3 py-8 md:py-10 md:container md:px-5 lg:px-7">
           <TasksTable
             showTaskEditor={showTaskEditor}
