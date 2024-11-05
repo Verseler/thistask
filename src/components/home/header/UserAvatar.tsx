@@ -8,12 +8,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthProvider/AuthProvider";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { getFirstNameInitial } from "./header.helper";
-import { useBoundStore } from "@/zustand/useBoundStore";
 import ConfirmationDialog from "@/components/common/ConfirmationDialog";
 import { useState } from "react";
 
@@ -23,7 +21,6 @@ type UserAvatarProps = {
 
 export default function UserAvatar({ orderReversed }: UserAvatarProps) {
   const { logout, user } = useAuth();
-  const showSettingsModal = useBoundStore((state) => state.showSettingsModal);
   const firstName: string = user?.user_metadata?.first_name;
   const lastName: string = user?.user_metadata?.last_name;
   const userName = `${firstName} ${lastName}`;
@@ -70,10 +67,6 @@ export default function UserAvatar({ orderReversed }: UserAvatarProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="dark:bg-gray-800">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={showSettingsModal}>
-            Settings
-          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={showLogoutDialog}
