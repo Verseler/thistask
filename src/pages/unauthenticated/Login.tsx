@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import BgImage from "@/assets/svg/startingScreenBg.svg";
 import AppLogo from "@/components/common/AppLogo";
+import FieldErrorMsg from "@/components/ui/FieldErrorMsg";
 
 type LoginForm = {
   email: string;
@@ -89,11 +90,7 @@ export default function Login() {
             </CardDescription>
           </CardHeader>
           <CardContent className="px-4 md:px-6">
-            {serverErrorMsg && (
-              <div className="mb-2 text-center text-red-500">
-                {serverErrorMsg}
-              </div>
-            )}
+            <FieldErrorMsg error={serverErrorMsg} className="mb-2" />
 
             <form
               noValidate
@@ -111,9 +108,7 @@ export default function Login() {
                   disabled={loading}
                   hasError={!!errors.email}
                 />
-                {errors.email && (
-                  <p className="text-sm text-red-500">{errors.email.message}</p>
-                )}
+                <FieldErrorMsg error={errors.email} />
               </div>
 
               <div className="grid gap-2">
@@ -134,11 +129,7 @@ export default function Login() {
                   disabled={loading}
                   hasError={!!errors.password}
                 />
-                {errors.password && (
-                  <p className="text-sm text-red-500">
-                    {errors.password.message}
-                  </p>
-                )}
+                <FieldErrorMsg error={errors.password} />
               </div>
 
               <Button type="submit" disabled={loading}>

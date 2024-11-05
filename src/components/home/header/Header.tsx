@@ -4,12 +4,13 @@ import { Button } from "@/components/ui/button";
 import UserAvatar from "./UserAvatar";
 import ThemeSwitch from "./ThemeSwitch";
 import AppLogo from "@/components/common/AppLogo";
+import { useBoundStore } from "@/zustand/useBoundStore";
 
-type HeaderProps = {
-  toggleShowMobileSidebar: () => void;
-};
+const Header = () => {
+  const toggleShowMobileSidebar = useBoundStore(
+    (state) => state.toggleShowMobileSidebar
+  );
 
-const Header = ({ toggleShowMobileSidebar }: HeaderProps) => {
   return (
     <header className="sticky top-0 z-40 flex items-center gap-4 px-2 bg-white border-b h-14 md:px-6 dark:bg-gray-900 dark:border-gray-800">
       <div className="flex items-center justify-between w-full gap-2 md:justify-end md:ml-auto">
