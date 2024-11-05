@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { HTMLProps, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import ConfirmationDialog from "@/components/common/ConfirmationDialog";
 
 type AddProjectInputProps = {
   onAddProject: (projectName: string) => Promise<void>;
@@ -17,10 +18,10 @@ export default function AddProjectInput({
 }: AddProjectInputProps) {
   const [projectName, setProjectName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const showLogoutDialog = () => setIsDialogOpen(true);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const handleSubmit = () => {
     try {
       setLoading(true);
 
@@ -42,7 +43,7 @@ export default function AddProjectInput({
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={(e) => e.preventDefault()}
       className={cn(
         "flex items-center border rounded-md md:py-0 dark:border-gray-700 focus-within:ring-1 focus-within:ring-ring focus-within:ring-black dark:focus-within:ring-gray-400 dark:bg-gray-800",
         className
@@ -57,14 +58,22 @@ export default function AddProjectInput({
         disabled={loading}
       />
       <Button
-        type="submit"
         variant="ghost"
         size="icon"
         className="w-16 rounded-none md:w-12 border-s-0"
         disabled={loading}
+        onClick={showLogoutDialog}
       >
         <Plus className="text-gray-500 size-8 md:size-6" />
       </Button>
+
+      <ConfirmationDialog
+        open={isDialogOpen}
+        setOpen={setIsDialogOpen}
+        onClickConfirm={handleSubmit}
+        title="Add Project"
+        desc="Are you sure you want to add this project?"
+      />
     </form>
   );
 }
