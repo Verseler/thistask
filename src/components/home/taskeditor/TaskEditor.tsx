@@ -36,6 +36,7 @@ import AddProjectInput from "../sidebar/AddProjectInput";
 import { addProject } from "@/services/api/projects";
 import { useAuth } from "@/context/AuthProvider/AuthProvider";
 import { useBoundStore } from "@/zustand/useBoundStore";
+import FieldErrorMsg from "@/components/ui/FieldErrorMsg";
 
 type TaskEditorProps = {
   isVisible: boolean;
@@ -210,10 +211,11 @@ export default function TaskEditor({
                   />
                 )}
               />
-
-              {errors.name && (
-                <p className="text-sm text-red-500 ms-3">Name is required</p>
-              )}
+              <FieldErrorMsg
+                error={errors.name}
+                message="Name is required"
+                className="ms-3"
+              />
 
               <Controller
                 control={control}

@@ -17,6 +17,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { signup } from "@/services/api";
 import BgImage from "@/assets/svg/startingScreenBg.svg";
 import AppLogo from "@/components/common/AppLogo";
+import FieldErrorMsg from "@/components/ui/FieldErrorMsg";
 
 type RegisterForm = {
   email: string;
@@ -113,11 +114,7 @@ function Register() {
             </CardDescription>
           </CardHeader>
           <CardContent className="px-4 md:px-6">
-            {serverErrorMsg && (
-              <div className="mb-2 text-center text-red-500">
-                {serverErrorMsg}
-              </div>
-            )}
+            <FieldErrorMsg error={serverErrorMsg} className="mb-2" />
 
             <form
               noValidate
@@ -151,17 +148,8 @@ function Register() {
                     className="dark:border-gray-600"
                   />
                 </div>
-
-                {errors.first_name && (
-                  <p className="text-sm text-red-500">
-                    {errors.first_name.message}
-                  </p>
-                )}
-                {errors.last_name && (
-                  <p className="text-sm text-red-500">
-                    {errors.last_name.message}
-                  </p>
-                )}
+                <FieldErrorMsg error={errors.first_name} />
+                <FieldErrorMsg error={errors.last_name} />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
@@ -176,9 +164,7 @@ function Register() {
                   {...register("email", registerOptions.email)}
                   className="dark:border-gray-600"
                 />
-                {errors.email && (
-                  <p className="text-sm text-red-500">{errors.email.message}</p>
-                )}
+                <FieldErrorMsg error={errors.email} />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
@@ -189,13 +175,8 @@ function Register() {
                   disabled={loading}
                   hasError={!!errors.password}
                   {...register("password", registerOptions.password)}
-                 
                 />
-                {errors.password && (
-                  <p className="text-sm text-red-500">
-                    {errors.password.message}
-                  </p>
-                )}
+                <FieldErrorMsg error={errors.password} />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="password">Confirm Password</Label>
@@ -208,11 +189,7 @@ function Register() {
                   hasError={!!errors.password}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
-                {errors.password && (
-                  <p className="text-sm text-red-500">
-                    {errors.password.message}
-                  </p>
-                )}
+                <FieldErrorMsg error={errors.password} />
               </div>
               <Button disabled={loading} type="submit">
                 Create an account

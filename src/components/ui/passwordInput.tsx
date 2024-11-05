@@ -31,7 +31,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
           type="button"
           variant="ghost"
           size="sm"
-          className="absolute top-0 z-10 h-full px-3 py-2 right-1 md:right-0 hover:bg-transparent"
+          className="absolute top-0 z-10 h-full px-3 py-2 right-1 md:right-0 hover:bg-transparent dark:hover:bg-transparent"
           onClick={() => setShowPassword((prev) => !prev)}
         >
           {showPassword ? (
