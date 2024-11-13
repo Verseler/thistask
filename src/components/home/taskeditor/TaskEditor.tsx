@@ -32,9 +32,6 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "@/components/ui/use-toast";
 import { upsertTask } from "@/services/api/tasks";
 import TaskEditorHeader from "./TaskEditorHeader";
-import AddProjectInput from "../sidebar/AddProjectInput";
-import { addProject } from "@/services/api/projects";
-import { useAuth } from "@/context/AuthProvider/AuthProvider";
 import { useBoundStore } from "@/zustand/useBoundStore";
 import FieldErrorMsg from "@/components/ui/FieldErrorMsg";
 
@@ -59,7 +56,6 @@ export default function TaskEditor({
     formState: { errors },
   } = useForm<Task>();
   const [loading, setLoading] = useState<boolean>(false);
-  const { user } = useAuth();
   const projects = useBoundStore((state) => state.projects);
   const clearSelectedTaskId = useBoundStore(
     (state) => state.clearSelectedTaskId
@@ -133,31 +129,6 @@ export default function TaskEditor({
       clearSelectedTaskId();
     }
   }, [isVisible, reset]);
-
-  const handleAddProject = async (projectName: string) => {
-    if (!user) {
-      toast({
-        title: "Error: You are not signed in",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const { error } = await addProject(projectName, user?.id);
-
-    if (error) {
-      toast({
-        title: "Error: unable to add new project",
-        description: error.message,
-      });
-    } else {
-      refetchTasks();
-      toast({
-        title: "Project added successfully",
-        duration: 1500,
-      });
-    }
-  };
 
   //handle keyboard escape keyboard key event
   useEffect(() => {
@@ -275,10 +246,9 @@ export default function TaskEditor({
 
                           <SelectContent>
                             {projects.length === 0 ? (
-                              <AddProjectInput
-                                onAddProject={handleAddProject}
-                                className="max-w-80 mx-auto md:max-w-[15.5rem]"
-                              />
+                              <p className="p-1 text-sm italic text-center text-gray-500">
+                                No projects found
+                              </p>
                             ) : (
                               renderProjectSelectItems
                             )}
