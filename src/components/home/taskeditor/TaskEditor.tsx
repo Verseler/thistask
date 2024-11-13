@@ -32,7 +32,6 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "@/components/ui/use-toast";
 import { upsertTask } from "@/services/api/tasks";
 import TaskEditorHeader from "./TaskEditorHeader";
-import { addProject } from "@/services/api/projects";
 import { useAuth } from "@/context/AuthProvider/AuthProvider";
 import { useBoundStore } from "@/zustand/useBoundStore";
 import FieldErrorMsg from "@/components/ui/FieldErrorMsg";
@@ -132,31 +131,6 @@ export default function TaskEditor({
       clearSelectedTaskId();
     }
   }, [isVisible, reset]);
-
-  const handleAddProject = async (projectName: string) => {
-    if (!user) {
-      toast({
-        title: "Error: You are not signed in",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const { error } = await addProject(projectName, user?.id);
-
-    if (error) {
-      toast({
-        title: "Error: unable to add new project",
-        description: error.message,
-      });
-    } else {
-      refetchTasks();
-      toast({
-        title: "Project added successfully",
-        duration: 1500,
-      });
-    }
-  };
 
   //handle keyboard escape keyboard key event
   useEffect(() => {
