@@ -32,7 +32,6 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "@/components/ui/use-toast";
 import { upsertTask } from "@/services/api/tasks";
 import TaskEditorHeader from "./TaskEditorHeader";
-import { useAuth } from "@/context/AuthProvider/AuthProvider";
 import { useBoundStore } from "@/zustand/useBoundStore";
 import FieldErrorMsg from "@/components/ui/FieldErrorMsg";
 
@@ -57,7 +56,6 @@ export default function TaskEditor({
     formState: { errors },
   } = useForm<Task>();
   const [loading, setLoading] = useState<boolean>(false);
-  const { user } = useAuth();
   const projects = useBoundStore((state) => state.projects);
   const clearSelectedTaskId = useBoundStore(
     (state) => state.clearSelectedTaskId
